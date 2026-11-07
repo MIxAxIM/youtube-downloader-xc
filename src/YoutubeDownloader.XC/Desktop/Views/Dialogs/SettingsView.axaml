@@ -1,0 +1,591 @@
+<UserControl
+    x:Class="YoutubeDownloader.XC.Views.Dialogs.SettingsView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:YoutubeDownloader.XC.Converters"
+    xmlns:dialogs="clr-namespace:YoutubeDownloader.XC.ViewModels.Dialogs"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    x:DataType="dialogs:SettingsViewModel">
+    <Grid RowDefinitions="*,Auto">
+        <Grid Grid.Row="0" ColumnDefinitions="160,*" Margin="0,8,0,0">
+            <ListBox
+                Grid.Column="0"
+                Margin="8"
+                Classes="settingsTabs"
+                ItemsSource="{Binding Tabs}"
+                SelectedItem="{Binding SelectedTab}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="dialogs:SettingsTab">
+                        <StackPanel Margin="4" Orientation="Horizontal" Spacing="8">
+                            <materialIcons:MaterialIcon
+                                Width="20"
+                                Height="20"
+                                Kind="{Binding Converter={x:Static dialogs:SettingsTabIconConverter.Instance}}" />
+                            <TextBlock VerticalAlignment="Center" Text="{Binding}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <Border
+                Grid.Column="1"
+                Margin="0,0,8,0"
+                Padding="8,8,4,8"
+                BorderBrush="{DynamicResource MaterialDividerBrush}"
+                BorderThickness="1,0,0,0">
+                <ScrollViewer
+                    AllowAutoHide="False"
+                    HorizontalScrollBarVisibility="Disabled"
+                    Padding="0,0,8,0"
+                    VerticalScrollBarVisibility="Auto">
+                    <Panel Margin="0,0,12,0">
+                        <!--  General  -->
+                        <StackPanel IsVisible="{Binding IsGeneralTab}">
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.ThemeLabel}" />
+                                <ComboBox
+                                    Width="160"
+                                    MinHeight="32"
+                                    DockPanel.Dock="Right"
+                                    ItemsSource="{Binding AvailableThemes}"
+                                    SelectedItem="{Binding Theme}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.LanguageLabel}" />
+                                <ComboBox
+                                    Width="160"
+                                    MinHeight="32"
+                                    DockPanel.Dock="Right"
+                                    ItemsSource="{Binding AvailableLanguages}"
+                                    SelectedItem="{Binding Language}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Converter={x:Static converters:LanguageToStringConverter.Instance}}" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </DockPanel>
+                            <DockPanel Margin="8" IsVisible="{Binding IsAutoUpdateAvailable}" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.AutoUpdateLabel}" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding IsAutoUpdateEnabled}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.AddCardsOnTopLabel}" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding AddCardsOnTop}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.AutoStartReadyLabel}" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding AutoStartReady}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.AutoRemoveCompletedLabel}" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding AutoRemoveCompleted}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.AutoExpandPlaylistLabel}" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding AutoExpandPlaylist}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.AutoAddClipboardLabel}" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding AutoAddClipboardLinks}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.MinimizeToTrayLabel}" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding MinimizeToTray}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="History retention (0=forever, 30 days)" />
+                                <NumericUpDown
+                                    Width="72"
+                                    MinHeight="32"
+                                    HorizontalAlignment="Right"
+                                    DockPanel.Dock="Right"
+                                    FormatString="0"
+                                    Maximum="30"
+                                    Minimum="0"
+                                    Value="{Binding HistoryRetentionDays}" />
+                            </DockPanel>
+                            <StackPanel Margin="8" Orientation="Horizontal" Spacing="8">
+                                <Button
+                                    MinWidth="120"
+                                    MinHeight="32"
+                                    Padding="12,4"
+                                    Command="{Binding ExportSettingsCommand}"
+                                    Content="Export settings"
+                                    Theme="{DynamicResource MaterialOutlineButton}" />
+                                <Button
+                                    MinWidth="120"
+                                    MinHeight="32"
+                                    Padding="12,4"
+                                    Command="{Binding ImportSettingsCommand}"
+                                    Content="Import settings"
+                                    Theme="{DynamicResource MaterialOutlineButton}" />
+                                <Button
+                                    MinWidth="140"
+                                    MinHeight="32"
+                                    Padding="12,4"
+                                    Command="{Binding ClearThumbnailCacheCommand}"
+                                    Content="Clear thumbnail cache"
+                                    Theme="{DynamicResource MaterialOutlineButton}" />
+                            </StackPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.FFmpegPathLabel}" />
+                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="4">
+                                    <TextBox
+                                        Width="220"
+                                        MinHeight="32"
+                                        Text="{Binding FFmpegFilePath}"
+                                        PlaceholderText="{Binding LocalizationManager.FFmpegPathPlaceholderText}" />
+                                    <Button
+                                        Width="32"
+                                        MinHeight="32"
+                                        Padding="0"
+                                        Command="{Binding BrowseFFmpegFilePathCommand}"
+                                        Content="..."
+                                        Theme="{DynamicResource MaterialOutlineButton}" />
+                                    <Button
+                                        Width="32"
+                                        MinHeight="32"
+                                        Padding="0"
+                                        Command="{Binding ResetFFmpegFilePathCommand}"
+                                        Content="×"
+                                        Theme="{DynamicResource MaterialFlatButton}" />
+                                </StackPanel>
+                            </DockPanel>
+                        </StackPanel>
+
+                        <!--  Download  -->
+                        <StackPanel IsVisible="{Binding IsDownloadTab}">
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.ParallelLimitLabel}" />
+                                <NumericUpDown
+                                    Width="72"
+                                    MinHeight="32"
+                                    HorizontalAlignment="Right"
+                                    DockPanel.Dock="Right"
+                                    FormatString="0"
+                                    Maximum="20"
+                                    Minimum="1"
+                                    Value="{Binding ParallelLimit}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.VideoFolderLabel}" />
+                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="4">
+                                    <TextBox Width="240" MinHeight="32" Text="{Binding VideoFolder}" />
+                                    <Button
+                                        Width="32"
+                                        MinHeight="32"
+                                        Padding="0"
+                                        Command="{Binding BrowseVideoFolderCommand}"
+                                        Content="..."
+                                        Theme="{DynamicResource MaterialOutlineButton}" />
+                                </StackPanel>
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.AudioFolderLabel}" />
+                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="4">
+                                    <TextBox Width="240" MinHeight="32" Text="{Binding AudioFolder}" />
+                                    <Button
+                                        Width="32"
+                                        MinHeight="32"
+                                        Padding="0"
+                                        Command="{Binding BrowseAudioFolderCommand}"
+                                        Content="..."
+                                        Theme="{DynamicResource MaterialOutlineButton}" />
+                                </StackPanel>
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.SameFolderAsAudioLabel}" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding VideoUsesAudioFolder}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.PlaylistSubfolderLabel}" />
+                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="12">
+                                    <CheckBox Content="{Binding LocalizationManager.VideoLabel}" IsChecked="{Binding PlaylistSubfolderVideo}" />
+                                    <CheckBox Content="{Binding LocalizationManager.AudioLabel}" IsChecked="{Binding PlaylistSubfolderAudio}" />
+                                </StackPanel>
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="Play when complete" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding PlayOnComplete}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="Pause on metered network" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding PauseOnMetered}" />
+                            </DockPanel>
+                        </StackPanel>
+
+                        <!--  Network  -->
+                        <StackPanel IsVisible="{Binding IsNetworkTab}">
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.UseProxyLabel}" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding IsProxyEnabled}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.ProxyProtocolLabel}" />
+                                <ComboBox
+                                    Width="140"
+                                    MinHeight="32"
+                                    DockPanel.Dock="Right"
+                                    ItemsSource="{Binding AvailableProxyProtocols}"
+                                    SelectedItem="{Binding ProxyProtocol}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.ProxyHostLabel}" />
+                                <TextBox
+                                    Width="200"
+                                    MinHeight="32"
+                                    DockPanel.Dock="Right"
+                                    Text="{Binding ProxyHost}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.ProxyPortLabel}" />
+                                <NumericUpDown
+                                    Width="88"
+                                    MinHeight="32"
+                                    HorizontalAlignment="Right"
+                                    DockPanel.Dock="Right"
+                                    FormatString="0"
+                                    Maximum="65535"
+                                    Minimum="1"
+                                    Value="{Binding ProxyPort}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.ProxyUsernameLabel}" />
+                                <TextBox
+                                    Width="200"
+                                    MinHeight="32"
+                                    DockPanel.Dock="Right"
+                                    Text="{Binding ProxyUsername}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.ProxyPasswordLabel}" />
+                                <TextBox
+                                    Width="200"
+                                    MinHeight="32"
+                                    DockPanel.Dock="Right"
+                                    PasswordChar="•"
+                                    Text="{Binding ProxyPassword}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.ConnectionsPerDownloadLabel}" />
+                                <NumericUpDown
+                                    Width="72"
+                                    MinHeight="32"
+                                    HorizontalAlignment="Right"
+                                    DockPanel.Dock="Right"
+                                    FormatString="0"
+                                    Maximum="16"
+                                    Minimum="1"
+                                    Value="{Binding ConnectionsPerDownload}" />
+                            </DockPanel>
+                            <StackPanel Margin="8" Orientation="Horizontal" Spacing="8">
+                                <Button
+                                    MinWidth="100"
+                                    MinHeight="32"
+                                    Padding="12,4"
+                                    Command="{Binding TestProxyCommand}"
+                                    Content="{Binding LocalizationManager.ProxyTestButton}"
+                                    IsEnabled="{Binding !IsProxyTesting}"
+                                    Theme="{DynamicResource MaterialOutlineButton}" />
+                                <TextBlock VerticalAlignment="Center" Text="{Binding ProxyTestResult}" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!--  Audio  -->
+                        <StackPanel IsVisible="{Binding IsAudioTab}">
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.FileNameTemplateLabel}" />
+                                <TextBox
+                                    Width="240"
+                                    MinHeight="32"
+                                    DockPanel.Dock="Right"
+                                    Text="{Binding AudioFileNameTemplate}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.SkipExistingFilesLabel}" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding ShouldSkipExistingFiles}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="Remove emoji from names" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding RemoveEmojiFromNames}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.LoudnormLabel}" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding LoudnormEnabled}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.InjectAltLanguagesLabel}" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding ShouldInjectLanguageSpecificAudioStreams}" />
+                            </DockPanel>
+                        </StackPanel>
+
+                        <!--  Video  -->
+                        <StackPanel IsVisible="{Binding IsVideoTab}">
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.FileNameTemplateLabel}" />
+                                <TextBox
+                                    Width="240"
+                                    MinHeight="32"
+                                    DockPanel.Dock="Right"
+                                    Text="{Binding VideoFileNameTemplate}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.InjectSubtitlesLabel}" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding ShouldInjectSubtitles}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="Save subtitles as .srt" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding SaveSubtitlesAsSrt}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="Prefer higher bitrate" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding PreferHigherBitrate}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="SponsorBlock" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding SponsorBlockEnabled}" />
+                            </DockPanel>
+                        </StackPanel>
+
+                        <!--  Tags  -->
+                        <StackPanel IsVisible="{Binding IsTagsTab}">
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.InjectTagsLabel}" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding ShouldInjectTags}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="Year source" />
+                                <ComboBox
+                                    Width="140"
+                                    MinHeight="32"
+                                    DockPanel.Dock="Right"
+                                    ItemsSource="{Binding YearTagSources}"
+                                    SelectedItem="{Binding YearTagSource}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="Default album artist" />
+                                <TextBox
+                                    Width="200"
+                                    MinHeight="32"
+                                    DockPanel.Dock="Right"
+                                    Text="{Binding DefaultAlbumArtist}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="Write artwork" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding WriteArtwork}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="Description as comment" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding WriteDescriptionAsComment}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="Playlist album tags" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding PlaylistAlbumTags}" />
+                            </DockPanel>
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="Use channel as artist" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding UseChannelAsArtist}" />
+                            </DockPanel>
+                        </StackPanel>
+
+                        <!--  Authorization  -->
+                        <StackPanel IsVisible="{Binding IsAuthorizationTab}">
+                            <DockPanel Margin="8" LastChildFill="False">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    Text="{Binding LocalizationManager.PersistAuthLabel}" />
+                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding IsAuthPersisted}" />
+                            </DockPanel>
+                            <TextBlock
+                                Margin="8"
+                                Text="{Binding LocalizationManager.AuthenticatedText}"
+                                IsVisible="{Binding HasAuthCookies}" />
+                            <TextBlock
+                                Margin="8"
+                                Opacity="0.7"
+                                Text="YouTube only. Use the auth button on the main window to sign in." />
+                            <Button
+                                Margin="8"
+                                MinWidth="220"
+                                MinHeight="32"
+                                Padding="12,4"
+                                HorizontalAlignment="Left"
+                                Command="{Binding ImportBrowserCookiesCommand}"
+                                Content="Import cookies from Chrome / Edge"
+                                Theme="{DynamicResource MaterialOutlineButton}" />
+                        </StackPanel>
+                    </Panel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+
+        <Grid
+            Grid.Row="1"
+            Margin="16,8,16,12"
+            ColumnDefinitions="Auto,*,Auto">
+            <Button
+                MinWidth="132"
+                MinHeight="36"
+                Padding="16,6"
+                VerticalAlignment="Center"
+                Command="{Binding RestoreTabDefaultsCommand}"
+                Content="{Binding LocalizationManager.RestoreDefaultsButton}"
+                Theme="{DynamicResource MaterialOutlineButton}" />
+            <StackPanel
+                Grid.Column="2"
+                VerticalAlignment="Center"
+                Orientation="Horizontal"
+                Spacing="8">
+                <Button
+                    MinWidth="88"
+                    MinHeight="36"
+                    Padding="16,6"
+                    Command="{Binding ApplyCommand}"
+                    Content="{Binding LocalizationManager.ApplyButton}"
+                    Theme="{DynamicResource MaterialFlatButton}" />
+                <Button
+                    MinWidth="88"
+                    MinHeight="36"
+                    Padding="16,6"
+                    Command="{Binding CancelCommand}"
+                    Content="{Binding LocalizationManager.CancelButton}"
+                    Theme="{DynamicResource MaterialFlatButton}" />
+                <Button
+                    MinWidth="88"
+                    MinHeight="36"
+                    Padding="16,6"
+                    Command="{Binding OkCommand}"
+                    Content="{Binding LocalizationManager.OkButton}"
+                    Theme="{DynamicResource MaterialOutlineButton}" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

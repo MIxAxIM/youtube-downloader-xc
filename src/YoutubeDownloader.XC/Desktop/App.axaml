@@ -1,0 +1,329 @@
+<Application
+    x:Class="YoutubeDownloader.XC.App"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+    xmlns:framework="clr-namespace:YoutubeDownloader.XC.Framework"
+    xmlns:materialAssists="clr-namespace:Material.Styles.Assists;assembly=Material.Styles"
+    xmlns:materialControls="clr-namespace:Material.Styles.Controls;assembly=Material.Styles"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:materialStyles="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
+    Name="Youtube Downloader XC"
+    ActualThemeVariantChanged="Application_OnActualThemeVariantChanged">
+    <TrayIcon.Icons>
+        <TrayIcons>
+            <TrayIcon Icon="/favicon.ico" ToolTipText="Youtube Downloader XC">
+                <TrayIcon.Menu>
+                    <NativeMenu>
+                        <NativeMenuItem Header="Open" Click="TrayOpen_OnClick" />
+                        <NativeMenuItem Header="Pause / Resume" Click="TrayPauseResume_OnClick" />
+                        <NativeMenuItem Header="Quit" Click="TrayQuit_OnClick" />
+                    </NativeMenu>
+                </TrayIcon.Menu>
+            </TrayIcon>
+        </TrayIcons>
+    </TrayIcon.Icons>
+    <Application.DataTemplates>
+        <framework:ViewManager />
+    </Application.DataTemplates>
+
+    <Application.Styles>
+        <!--  This theme is used as a stub to pre-load default resources, the actual colors are set through code  -->
+        <materialStyles:MaterialTheme
+            BaseTheme="Light"
+            PrimaryColor="Grey"
+            SecondaryColor="DeepOrange" />
+        <materialIcons:MaterialIconStyles />
+        <dialogHostAvalonia:DialogHostStyles />
+
+        <!--  Combo box  -->
+        <Style Selector="ComboBox">
+            <Setter Property="FontSize" Value="14" />
+
+            <Style Selector="^ /template/ Panel#PART_RootPanel">
+                <Setter Property="Height" Value="22" />
+            </Style>
+
+            <Style Selector="^ /template/ ToggleButton">
+                <Style Selector="^:checked, ^:unchecked">
+                    <Setter Property="Margin" Value="0" />
+                    <Setter Property="CornerRadius" Value="0" />
+
+                    <Style Selector="^ ContentPresenter#contentPresenter">
+                        <Setter Property="Margin" Value="12,8" />
+                    </Style>
+                </Style>
+            </Style>
+        </Style>
+
+        <!--  Context menu  -->
+        <Style Selector="ContextMenu">
+            <Setter Property="BorderBrush" Value="{DynamicResource MaterialDividerBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+
+        <!--  Data grid  -->
+        <Style Selector="DataGrid">
+            <Setter Property="BorderBrush" Value="{DynamicResource MaterialDividerBrush}" />
+            <Setter Property="AutoGenerateColumns" Value="False" />
+            <Setter Property="CanUserReorderColumns" Value="False" />
+            <Setter Property="CanUserResizeColumns" Value="False" />
+            <Setter Property="CanUserSortColumns" Value="True" />
+            <Setter Property="IsReadOnly" Value="True" />
+            <Setter Property="SelectionMode" Value="Single" />
+        </Style>
+
+        <Style Selector="DataGridColumnHeader">
+            <Setter Property="AreSeparatorsVisible" Value="False" />
+        </Style>
+
+        <Style Selector="DataGridRow">
+            <Style Selector="^:selected /template/ Rectangle#BackgroundRectangle">
+                <Setter Property="IsVisible" Value="False" />
+            </Style>
+            <Style Selector="^:pointerover /template/ Rectangle#BackgroundRectangle">
+                <Setter Property="IsVisible" Value="False" />
+            </Style>
+        </Style>
+
+        <!--  Dialog host  -->
+        <Style Selector="dialogHostAvalonia|DialogHost">
+            <Setter Property="DialogMargin" Value="0" />
+        </Style>
+
+        <Style Selector="dialogHostAvalonia|DialogOverlayPopupHost">
+            <Setter Property="Margin" Value="48" />
+            <Setter Property="Background" Value="{DynamicResource MaterialPaperBrush}" />
+        </Style>
+
+        <!--  Snack bar host  -->
+        <Style Selector="materialControls|SnackbarHost">
+            <Setter Property="SnackbarHorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+
+            <Style Selector="^ /template/ ItemsControl#PART_SnackbarHostItemsContainer materialControls|Card">
+                <Setter Property="Background" Value="{DynamicResource MaterialDarkBackgroundBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource MaterialDarkForegroundBrush}" />
+            </Style>
+
+            <Style Selector="^ /template/ ItemsControl#PART_SnackbarHostItemsContainer Button">
+                <Setter Property="Foreground" Value="{DynamicResource SecondaryHueMidBrush}" />
+            </Style>
+        </Style>
+
+        <!--  Progress bar  -->
+        <Style Selector="ProgressBar">
+            <Setter Property="Minimum" Value="0" />
+            <Setter Property="Maximum" Value="1" />
+            <Setter Property="Foreground" Value="{DynamicResource AppAccentBrush}" />
+
+            <Style Selector="^:horizontal">
+                <Setter Property="MinHeight" Value="0" />
+            </Style>
+        </Style>
+
+        <!--  Caption buttons  -->
+        <Style Selector="Button.caption">
+            <Setter Property="Foreground" Value="{DynamicResource AppChromeForegroundBrush}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="CornerRadius" Value="0" />
+            <Style Selector="^:pointerover /template/ ContentPresenter">
+                <Setter Property="Background" Value="#22FFFFFF" />
+            </Style>
+        </Style>
+        <Style Selector="Button.caption.close:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#E81123" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+
+        <!--  Elevated queue cards  -->
+        <Style Selector="Border.queueCard">
+            <Setter Property="Background" Value="{DynamicResource AppCardBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AppCardBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="BoxShadow" Value="{DynamicResource AppCardShadow}" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BoxShadowsTransition Property="BoxShadow" Duration="0:0:0.18" />
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.18" />
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.18" />
+                </Transitions>
+            </Setter>
+            <Style Selector="^:pointerover">
+                <Setter Property="BoxShadow" Value="{DynamicResource AppCardShadowHover}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource AppAccentSoftBrush}" />
+                <Setter Property="RenderTransform" Value="translateY(-1px)" />
+            </Style>
+            <Style Selector="^.selected">
+                <Setter Property="BorderBrush" Value="{DynamicResource AppAccentBrush}" />
+                <Setter Property="BoxShadow" Value="{DynamicResource AppCardShadowSelected}" />
+            </Style>
+        </Style>
+
+        <!--  Primary amber buttons  -->
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="{DynamicResource AppAccentBrush}" />
+            <Setter Property="Foreground" Value="#1A1A1A" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Style Selector="^:pointerover /template/ ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource AppAccentHoverBrush}" />
+            </Style>
+        </Style>
+
+        <!--  Rounded inputs  -->
+        <Style Selector="TextBox">
+            <Setter Property="CornerRadius" Value="10" />
+        </Style>
+        <Style Selector="ComboBox">
+            <Setter Property="CornerRadius" Value="10" />
+        </Style>
+        <Style Selector="AutoCompleteBox">
+            <Setter Property="CornerRadius" Value="10" />
+        </Style>
+
+        <!--  Slider  -->
+        <Style Selector="Slider">
+            <Style Selector="^ /template/ ProgressBar#PART_ProgressLayer">
+                <Style Selector="^:horizontal">
+                    <Style Selector="^ Panel#PART_InnerPanel">
+                        <Setter Property="Height" Value="2" />
+
+                        <Style Selector="^ Border#PART_InactiveState">
+                            <Setter Property="Margin" Value="0" />
+                            <Setter Property="Height" Value="2" />
+                        </Style>
+
+                        <Style Selector="^ Border#PART_Indicator">
+                            <Setter Property="Margin" Value="0" />
+                        </Style>
+                    </Style>
+                </Style>
+            </Style>
+
+            <Style Selector="^ /template/ Track#PART_Track">
+                <Style Selector="^:horizontal">
+                    <Setter Property="Margin" Value="4,0" />
+                </Style>
+
+                <Style Selector="^ Border#PART_HoverEffect">
+                    <Setter Property="Width" Value="24" />
+                    <Setter Property="Height" Value="24" />
+                </Style>
+
+                <Style Selector="^ Border#PART_ThumbGrip">
+                    <Setter Property="Width" Value="12" />
+                    <Setter Property="Height" Value="12" />
+                </Style>
+            </Style>
+        </Style>
+
+        <!--  Run  -->
+        <Style Selector="Run">
+            <Setter Property="BaselineAlignment" Value="Center" />
+        </Style>
+
+        <!--  Text box  -->
+        <Style Selector="TextBox">
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+
+        <!--  Settings tab rail  -->
+        <Style Selector="ListBox.settingsTabs">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+        <Style Selector="ListBox.settingsTabs ListBoxItem">
+            <Setter Property="Margin" Value="4,2" />
+            <Setter Property="Padding" Value="10,8" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Style Selector="^:selected /template/ ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource AppAccentSoftBrush}" />
+            </Style>
+            <Style Selector="^:pointerover /template/ ContentPresenter">
+                <Setter Property="Background" Value="#18FFFFFF" />
+            </Style>
+        </Style>
+
+        <!--  Toggle switch  -->
+        <Style Selector="ToggleSwitch">
+            <Setter Property="materialAssists:ToggleSwitchAssist.SwitchThumbOffBackground" Value="{DynamicResource ToggleBackgroundBrush}" />
+        </Style>
+
+        <!--  Tooltip  -->
+        <Style Selector="ToolTip">
+            <Setter Property="TextElement.FontSize" Value="14" />
+            <Setter Property="TextElement.FontWeight" Value="Normal" />
+            <Setter Property="TextElement.FontStyle" Value="Normal" />
+            <Setter Property="TextElement.FontStretch" Value="Normal" />
+        </Style>
+    </Application.Styles>
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Default">
+                    <SolidColorBrush x:Key="ToggleBackgroundBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="AppChromeBrush" Color="#2B2F2F" />
+                    <SolidColorBrush x:Key="AppChromeEdgeBrush" Color="#3A4040" />
+                    <SolidColorBrush x:Key="AppChromeForegroundBrush" Color="#F3F3F3" />
+                    <SolidColorBrush x:Key="AppPageBrush" Color="#F4F5F5" />
+                    <SolidColorBrush x:Key="AppCardBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="AppCardBorderBrush" Color="#1A000000" />
+                    <SolidColorBrush x:Key="AppAccentBrush" Color="#F9A825" />
+                    <SolidColorBrush x:Key="AppAccentHoverBrush" Color="#FFB84D" />
+                    <SolidColorBrush x:Key="AppAccentSoftBrush" Color="#33F9A825" />
+                    <SolidColorBrush x:Key="AppStatusReadyBrush" Color="#8A9090" />
+                    <SolidColorBrush x:Key="AppStatusDownloadingBrush" Color="#F9A825" />
+                    <SolidColorBrush x:Key="AppStatusCompletedBrush" Color="#43A047" />
+                    <SolidColorBrush x:Key="AppStatusFailedBrush" Color="#E53935" />
+                    <SolidColorBrush x:Key="AppStatusPausedBrush" Color="#607D8B" />
+                    <BoxShadows x:Key="AppCardShadow">0 4 14 0 #1A000000</BoxShadows>
+                    <BoxShadows x:Key="AppCardShadowHover">0 8 22 0 #28000000</BoxShadows>
+                    <BoxShadows x:Key="AppCardShadowSelected">0 6 18 0 #40F9A825</BoxShadows>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="ToggleBackgroundBrush" Color="#8E8E8E" />
+                    <SolidColorBrush x:Key="AppChromeBrush" Color="#1E2222" />
+                    <SolidColorBrush x:Key="AppChromeEdgeBrush" Color="#2F3535" />
+                    <SolidColorBrush x:Key="AppChromeForegroundBrush" Color="#F3F3F3" />
+                    <SolidColorBrush x:Key="AppPageBrush" Color="#161A1A" />
+                    <SolidColorBrush x:Key="AppCardBrush" Color="#232828" />
+                    <SolidColorBrush x:Key="AppCardBorderBrush" Color="#28FFFFFF" />
+                    <SolidColorBrush x:Key="AppAccentBrush" Color="#F9A825" />
+                    <SolidColorBrush x:Key="AppAccentHoverBrush" Color="#FFB84D" />
+                    <SolidColorBrush x:Key="AppAccentSoftBrush" Color="#40F9A825" />
+                    <SolidColorBrush x:Key="AppStatusReadyBrush" Color="#9AA0A0" />
+                    <SolidColorBrush x:Key="AppStatusDownloadingBrush" Color="#F9A825" />
+                    <SolidColorBrush x:Key="AppStatusCompletedBrush" Color="#66BB6A" />
+                    <SolidColorBrush x:Key="AppStatusFailedBrush" Color="#EF5350" />
+                    <SolidColorBrush x:Key="AppStatusPausedBrush" Color="#90A4AE" />
+                    <BoxShadows x:Key="AppCardShadow">0 6 18 0 #66000000</BoxShadows>
+                    <BoxShadows x:Key="AppCardShadowHover">0 10 26 0 #88000000</BoxShadows>
+                    <BoxShadows x:Key="AppCardShadowSelected">0 8 22 0 #66F9A825</BoxShadows>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+
+            <!--  Text box  -->
+            <ControlTheme
+                x:Key="CompactTextBox"
+                BasedOn="{StaticResource {x:Type TextBox}}"
+                TargetType="{x:Type TextBox}">
+                <Styles>
+                    <Style Selector="TextBox">
+                        <Setter Property="Height" Value="22" />
+
+                        <Style Selector="^ /template/ Panel#PART_TextFieldPanel">
+                            <Setter Property="MinHeight" Value="0" />
+                        </Style>
+
+                        <Style Selector="^ /template/ Panel#PART_TextContainer">
+                            <Setter Property="Margin" Value="0" />
+                        </Style>
+                    </Style>
+                </Styles>
+            </ControlTheme>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

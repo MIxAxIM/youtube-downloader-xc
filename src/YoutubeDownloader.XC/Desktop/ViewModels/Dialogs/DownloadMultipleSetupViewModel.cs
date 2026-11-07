@@ -1,0 +1,150 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Input.Platform;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using PowerKit.Extensions;
+using YoutubeDownloader.XC.Core.Downloading;
+using YoutubeDownloader.XC.Framework;
+using YoutubeDownloader.XC.Localization;
+using YoutubeDownloader.XC.Services;
+using YoutubeDownloader.XC.Utils.Extensions;
+using YoutubeDownloader.XC.ViewModels.Components;
+using YoutubeExplode.Videos;
+using YoutubeExplode.Videos.Streams;
+
+namespace YoutubeDownloader.XC.ViewModels.Dialogs;
+
+public partial class DownloadMultipleSetupViewModel(
+    ViewModelManager viewModelManager,
+    DialogManager dialogManager,
+    LocalizationManager localizationManager,
+    SettingsService settingsService
+) : DialogViewModelBase<IReadOnlyList<DownloadViewModel>>
+{
+    public LocalizationManager LocalizationManager { get; } = localizationManager;
+
+    [ObservableProperty]
+    public partial string? Title { get; set; }
+
+    [ObservableProperty]
+    public partial IReadOnlyList<IVideo>? AvailableVideos { get; set; }
+
+    [ObservableProperty]
+    public partial Container SelectedContainer { get; set; } = Container.Mp4;
+
+    [ObservableProperty]
+    public partial VideoQualityPreference SelectedVideoQualityPreference { get; set; } =
+        VideoQualityPreference.Highest;
+
+    [ObservableProperty]
+    public partial bool IsAudioMode { get; set; }
+
+    [ObservableProperty]
+    public partial AudioBitratePreference SelectedAudioBitratePreference { get; set; } =
+        AudioBitratePreference.Source;
+
+    public ObservableCollection<IVideo> SelectedVideos { get; } = [];
+
+    public IReadOnlyList<Container> VideoContainers { get; } = [Container.Mp4, Container.WebM];
+
+    public IReadOnlyList<Container> AudioContainers { get; } =
+    [Container.Mp3, new("ogg"), Container.WebM, Container.Mp4, new("m4a")];
+
+    public IReadOnlyList<Container> VisibleContainers =>
+        IsAudioMode ? AudioContainers : VideoContainers;
+
+    public IReadOnlyList<AudioBitratePreference> AvailableAudioBitratePreferences { get; } =
+        Enum.GetValues<AudioBitratePreference>();
+
+    public IReadOnlyList<VideoQualityPreference> AvailableVideoQualityPreferences { get; } =
+        // Without .AsEnumerable(), the below line throws a compile-time error starting with .NET SDK v9.0.200
+        Enum.GetValues<VideoQualityPreference>().AsEnumerable().Reverse().ToArray();
+
+    public override Task InitializeAsync()
+    {
+        SelectedAudioBitratePreference = settingsService.LastAudioBitratePreference;
+        SelectedVideoQualityPreference = settingsService.LastVideoQualityPreference;
+        IsAudioMode = settingsService.LastDownloadMediaKind == DownloadMediaKind.Audio;
+        SelectedContainer = VisibleContainers.Contains(settingsService.LastContainer)
+            ? settingsService.LastContainer
+            : VisibleContainers[0];
+        SelectedVideos.CollectionChanged += (_, _) => ConfirmCommand.NotifyCanExecuteChanged();
+
+        return Task.CompletedTask;
+    }
+
+    partial void OnIsAudioModeChanged(bool value)
+    {
+        OnPropertyChanged(nameof(VisibleContainers));
+        if (!VisibleContainers.Contains(SelectedContainer))
+            SelectedContainer = VisibleContainers[0];
+    }
+
+    [RelayCommand]
+    private async Task CopyTitleAsync()
+    {
+        if (Application.Current?.ApplicationLifetime?.TryGetTopLevel()?.Clipboard is { } clipboard)
+            await clipboard.SetTextAsync(Title);
+    }
+
+    private bool CanConfirm() => SelectedVideos.Any();
+
+    [RelayCommand(CanExecute = nameof(CanConfirm))]
+    private async Task ConfirmAsync()
+    {
+        var dirPath = await dialogManager.PromptDirectoryPathAsync();
+        if (string.IsNullOrWhiteSpace(dirPath))
+            return;
+
+        var downloads = new List<DownloadViewModel>();
+        foreach (var (i, video) in SelectedVideos.Index())
+        {
+            var baseFilePath = Path.Combine(
+                dirPath,
+                FileNameTemplate.Apply(
+                    settingsService.FileNameTemplate,
+                    video,
+                    SelectedContainer,
+                    (i + 1).ToString().PadLeft(SelectedVideos.Count.ToString().Length, '0')
+                )
+            );
+
+            if (settingsService.ShouldSkipExistingFiles && File.Exists(baseFilePath))
+                continue;
+
+            var filePath = Path.EnsureUniqueFilePath(baseFilePath);
+
+            // Download does not start immediately, so lock in the file path to avoid conflicts
+            Directory.CreateForFile(filePath);
+            await File.WriteAllBytesAsync(filePath, []);
+
+            downloads.Add(
+                viewModelManager.GetDownloadViewModel(
+                    video,
+                    new VideoDownloadPreference(
+                        SelectedContainer,
+                        SelectedVideoQualityPreference,
+                        SelectedAudioBitratePreference,
+                        IsAudioMode
+                    ),
+                    filePath
+                )
+            );
+        }
+
+        settingsService.LastContainer = SelectedContainer;
+        settingsService.LastVideoQualityPreference = SelectedVideoQualityPreference;
+        settingsService.LastDownloadMediaKind = IsAudioMode
+            ? DownloadMediaKind.Audio
+            : DownloadMediaKind.Video;
+        settingsService.LastAudioBitratePreference = SelectedAudioBitratePreference;
+
+        Close(downloads);
+    }
+}
