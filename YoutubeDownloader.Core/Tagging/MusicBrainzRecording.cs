@@ -1,8 +1,9 @@
 namespace YoutubeDownloader.Core.Tagging;
 
-internal record MusicBrainzRecording(
+public record MusicBrainzRecording(
     string Artist,
     string? ArtistSort,
     string Title,
-    string? Album
+    string? Album,
+    int? Year = null
 );

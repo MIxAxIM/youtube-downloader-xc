@@ -17,6 +17,12 @@ public partial record VideoDownloadOption(
 
     public bool IsVideoUpscaled { get; } =
         StreamInfos.OfType<IVideoStreamInfo>().Any(s => s.IsVideoUpscaled);
+
+    public Bitrate? SourceAudioBitrate =>
+        IsAudioOnly ? StreamInfos.OfType<IAudioStreamInfo>().MaxBy(s => s.Bitrate)?.Bitrate : null;
+
+    public string? AudioBitrateLabel =>
+        SourceAudioBitrate is { } bitrate ? $"{Math.Round(bitrate.KiloBitsPerSecond)} kbps" : null;
 }
 
 public partial record VideoDownloadOption
@@ -96,58 +102,61 @@ public partial record VideoDownloadOption
 
         IEnumerable<VideoDownloadOption> GetAudioOnlyOptions()
         {
-            // WebM-based audio-only containers
+            var audioStreams = manifest.GetAudioStreams().ToArray();
+            var audioOnlyStreams = audioStreams.Where(s => s is AudioOnlyStreamInfo).ToArray();
+            if (audioOnlyStreams.Length > 0)
+                audioStreams = audioOnlyStreams;
+
+            var preferredStreams = audioStreams
+                .Where(s => s.IsAudioLanguageDefault ?? true)
+                .ToArray();
+            if (preferredStreams.Length == 0)
+                preferredStreams = audioStreams;
+
+            foreach (var stream in preferredStreams.OrderByDescending(s => s.Bitrate))
+                yield return new VideoDownloadOption(stream.Container, true, [stream]);
+
+            var transcodeSource = preferredStreams
+                .OrderByDescending(s => s.IsAudioLanguageDefault ?? true)
+                .ThenByDescending(s => s.Container == Container.WebM)
+                .ThenByDescending(s => s is AudioOnlyStreamInfo)
+                .ThenByDescending(s => s.Bitrate)
+                .FirstOrDefault();
+
+            if (transcodeSource is not null)
             {
-                var audioStreamInfo = manifest
-                    .GetAudioStreams()
-                    // Prefer audio streams in the default language (or non-language-specific streams)
-                    .OrderByDescending(s => s.IsAudioLanguageDefault ?? true)
-                    // Prefer audio streams with the same container
-                    .ThenByDescending(s => s.Container == Container.WebM)
-                    .ThenByDescending(s => s is AudioOnlyStreamInfo)
-                    .ThenByDescending(s => s.Bitrate)
-                    .FirstOrDefault();
-
-                if (audioStreamInfo is not null)
-                {
-                    yield return new VideoDownloadOption(Container.WebM, true, [audioStreamInfo]);
-
-                    yield return new VideoDownloadOption(Container.Mp3, true, [audioStreamInfo]);
-
-                    yield return new VideoDownloadOption(
-                        new Container("ogg"),
-                        true,
-                        [audioStreamInfo]
-                    );
-                }
+                yield return new VideoDownloadOption(Container.Mp3, true, [transcodeSource]);
+                yield return new VideoDownloadOption(new Container("ogg"), true, [transcodeSource]);
             }
 
-            // Mp4-based audio-only containers
-            {
-                var audioStreamInfo = manifest
-                    .GetAudioStreams()
-                    // Prefer audio streams in the default language (or non-language-specific streams)
-                    .OrderByDescending(s => s.IsAudioLanguageDefault ?? true)
-                    // Prefer audio streams with the same container
-                    .ThenByDescending(s => s.Container == Container.Mp4)
-                    .ThenByDescending(s => s is AudioOnlyStreamInfo)
-                    .ThenByDescending(s => s.Bitrate)
-                    .FirstOrDefault();
+            var aacSource = preferredStreams
+                .OrderByDescending(s => s.IsAudioLanguageDefault ?? true)
+                .ThenByDescending(s => s.Container == Container.Mp4)
+                .ThenByDescending(s => s is AudioOnlyStreamInfo)
+                .ThenByDescending(s => s.Bitrate)
+                .FirstOrDefault();
 
-                if (audioStreamInfo is not null)
-                {
-                    yield return new VideoDownloadOption(Container.Mp4, true, [audioStreamInfo]);
-                }
-            }
+            if (aacSource is not null)
+                yield return new VideoDownloadOption(new Container("m4a"), true, [aacSource]);
         }
 
-        // Deduplicate download options
+        // Deduplicate download options. Audio rows with the same container stay distinct
+        // when their source bitrates differ.
         var comparer = EqualityComparer<VideoDownloadOption>.Create(
             (x, y) =>
                 x?.VideoQuality == y?.VideoQuality
                 && x?.IsVideoUpscaled == y?.IsVideoUpscaled
-                && x?.Container == y?.Container,
-            x => HashCode.Combine(x.VideoQuality, x.IsVideoUpscaled, x.Container)
+                && x?.IsAudioOnly == y?.IsAudioOnly
+                && x?.Container == y?.Container
+                && x?.SourceAudioBitrate == y?.SourceAudioBitrate,
+            x =>
+                HashCode.Combine(
+                    x.VideoQuality,
+                    x.IsVideoUpscaled,
+                    x.IsAudioOnly,
+                    x.Container,
+                    x.SourceAudioBitrate
+                )
         );
 
         var options = new HashSet<VideoDownloadOption>(comparer);

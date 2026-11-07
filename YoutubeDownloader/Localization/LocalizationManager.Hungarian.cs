@@ -71,6 +71,14 @@ public partial class LocalizationManager
                 """,
             [nameof(ParallelLimitLabel)] = "Egyidejű letöltések",
             [nameof(ParallelLimitTooltip)] = "Hány letöltés futhat egyidejűleg",
+            [nameof(UseProxyLabel)] = "Proxy használata",
+            [nameof(UseProxyTooltip)] =
+                "YouTube-kérések, letöltések, címkék és frissítések küldése ezen a proxyn, amíg be van kapcsolva.",
+            [nameof(ProxyProtocolLabel)] = "Protokoll",
+            [nameof(ProxyHostLabel)] = "Gazdagép",
+            [nameof(ProxyPortLabel)] = "Port",
+            [nameof(ProxyUsernameLabel)] = "Felhasználónév",
+            [nameof(ProxyPasswordLabel)] = "Jelszó",
             [nameof(FFmpegPathLabel)] = "FFmpeg elérési útja",
             [nameof(FFmpegPathTooltip)] =
                 "Az FFmpeg futtatható fájljának elérési útja. Az automatikus felismeréshez hagyd üresen",
@@ -95,6 +103,34 @@ public partial class LocalizationManager
             [nameof(AudioLabel)] = "Audió",
             [nameof(UpscaledLabel)] = "Felskálázott",
             [nameof(FormatLabel)] = "Formátum",
+            [nameof(VideoLabel)] = "Videó",
+            [nameof(AudioBitrateLabel)] = "Audió bitráta",
+            [nameof(PasteButton)] = "Hivatkozás beillesztése",
+            [nameof(PasteTooltip)] = "Hivatkozás beillesztése a vágólapról a sorba",
+            [nameof(DownloadAllButton)] = "Összes letöltése",
+            [nameof(WaitingLabel)] = "Várakozás...",
+            [nameof(DownloadedProgress)] = "Letöltve {0} / {1}",
+            [nameof(UnsupportedBitrateTooltip)] =
+                "A YouTube nem adta meg ezt a bitrátát. Az alkalmazás így is tudja kódolni a fájlt.",
+            [nameof(GenreLabel)] = "Műfaj",
+            [nameof(DateLabel)] = "Dátum",
+            [nameof(SpeedLimitLabel)] = "Sebességkorlát",
+            [nameof(UnlimitedLabel)] = "Korlátlan",
+            [nameof(HistoryTooltip)] = "Előzmények",
+            [nameof(HistoryTitle)] = "Előzmények",
+            [nameof(ClearHistoryButton)] = "TÖRLÉS",
+            [nameof(HelpTooltip)] = "Súgó",
+            [nameof(HelpTitle)] = "Súgó",
+            [nameof(HelpMessage)] = """
+                Illesszen be egy hivatkozást a sorhoz. A letöltés csak egy letöltés gombbal indul.
+
+                A felső sáv a még el nem indított kártyák formátumát és bitrátáját állítja. Minden kártya módosíthatja a minőséget, a hangkártya a bitrátát is.
+
+                A halvány bitráta információs ikonnal nem a YouTube-tól származik. Az alkalmazás így is kódolni tudja.
+
+                A kártya balról telik meg letöltés közben.
+                """,
+            [nameof(ClipboardEmptyMessage)] = "A vágólap nem tartalmaz hivatkozást",
             // Download Multiple Setup
             [nameof(ContainerLabel)] = "Konténer",
             [nameof(VideoQualityLabel)] = "Videó minőség",

@@ -7,16 +7,25 @@ namespace YoutubeDownloader.Core.Downloading;
 
 public record VideoDownloadPreference(
     Container PreferredContainer,
-    VideoQualityPreference PreferredVideoQuality
+    VideoQualityPreference PreferredVideoQuality,
+    AudioBitratePreference PreferredAudioBitrate = AudioBitratePreference.Source,
+    bool AudioOnly = false
 )
 {
     public VideoDownloadOption? TryGetBestOption(IReadOnlyList<VideoDownloadOption> options)
     {
-        // Short-circuit for audio-only formats
-        if (PreferredContainer.IsAudioOnly)
-            return options.FirstOrDefault(o => o.Container == PreferredContainer);
+        if (AudioOnly || PreferredContainer.IsAudioOnly)
+        {
+            return options
+                .Where(o => o.IsAudioOnly && o.Container == PreferredContainer)
+                .OrderByDescending(o => o.SourceAudioBitrate?.BitsPerSecond ?? 0)
+                .FirstOrDefault();
+        }
 
-        var orderedOptions = options.OrderBy(o => o.VideoQuality).ToArray();
+        var orderedOptions = options
+            .Where(o => !o.IsAudioOnly)
+            .OrderBy(o => o.VideoQuality)
+            .ToArray();
 
         var preferredOption = PreferredVideoQuality switch
         {

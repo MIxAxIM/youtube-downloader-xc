@@ -73,6 +73,14 @@ public partial class LocalizationManager
             """,
         [nameof(ParallelLimitLabel)] = "병렬 한계",
         [nameof(ParallelLimitTooltip)] = "동시에 몇 개의 다운로드가 활성화될 수 있습니까",
+        [nameof(UseProxyLabel)] = "프록시 사용",
+        [nameof(UseProxyTooltip)] =
+            "프록시가 켜져 있는 동안 YouTube 요청, 다운로드, 태그, 업데이트를 이 프록시로 보냅니다.",
+        [nameof(ProxyProtocolLabel)] = "프로토콜",
+        [nameof(ProxyHostLabel)] = "호스트",
+        [nameof(ProxyPortLabel)] = "포트",
+        [nameof(ProxyUsernameLabel)] = "사용자 이름",
+        [nameof(ProxyPasswordLabel)] = "비밀번호",
         [nameof(FFmpegPathLabel)] = "FFmpeg 경로",
         [nameof(FFmpegPathTooltip)] =
             "FFmpeg 실행 파일의 경로입니다. 자동 감지를 사용하려면 비워 두세요.",
@@ -97,6 +105,34 @@ public partial class LocalizationManager
         [nameof(AudioLabel)] = "오디오",
         [nameof(UpscaledLabel)] = "업스케일",
         [nameof(FormatLabel)] = "형식",
+        [nameof(VideoLabel)] = "비디오",
+        [nameof(AudioBitrateLabel)] = "오디오 비트레이트",
+        [nameof(PasteButton)] = "링크 붙여넣기",
+        [nameof(PasteTooltip)] = "클립보드의 링크를 붙여 넣어 대기열에 추가합니다",
+        [nameof(DownloadAllButton)] = "모두 다운로드",
+        [nameof(WaitingLabel)] = "대기 중...",
+        [nameof(DownloadedProgress)] = "{1} 중 {0} 다운로드됨",
+        [nameof(UnsupportedBitrateTooltip)] =
+            "YouTube가 이 비트레이트를 제공하지 않았습니다. 앱이 이 속도로 인코딩할 수 있습니다.",
+        [nameof(GenreLabel)] = "장르",
+        [nameof(DateLabel)] = "날짜",
+        [nameof(SpeedLimitLabel)] = "속도 제한",
+        [nameof(UnlimitedLabel)] = "제한 없음",
+        [nameof(HistoryTooltip)] = "다운로드 기록",
+        [nameof(HistoryTitle)] = "기록",
+        [nameof(ClearHistoryButton)] = "지우기",
+        [nameof(HelpTooltip)] = "도움말",
+        [nameof(HelpTitle)] = "도움말",
+        [nameof(HelpMessage)] = """
+            링크를 붙여 넣으면 대기열에 추가됩니다. 다운로드 버튼을 눌러야 받기가 시작됩니다.
+
+            위쪽 막대는 아직 시작하지 않은 카드의 형식과 비트레이트를 정합니다. 각 카드는 화질을, 오디오 카드는 비트레이트를 바꿀 수 있습니다.
+
+            흐리게 표시되고 정보 아이콘이 있는 비트레이트는 YouTube가 제공하지 않은 값입니다. 앱이 그래도 인코딩할 수 있습니다.
+
+            다운로드 중에는 카드가 왼쪽부터 채워집니다.
+            """,
+        [nameof(ClipboardEmptyMessage)] = "클립보드에 링크가 없습니다",
         // Download Multiple Setup
         [nameof(ContainerLabel)] = "컨테이너",
         [nameof(VideoQualityLabel)] = "동영상 품질",

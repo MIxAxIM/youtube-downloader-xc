@@ -59,14 +59,25 @@ internal class MusicBrainzClient
             if (string.IsNullOrWhiteSpace(title))
                 continue;
 
-            var album = recordingJson
+            var firstRelease = recordingJson
                 .GetPropertyOrNull("releases")
                 ?.EnumerateArrayOrNull()
-                ?.FirstOrDefault()
-                .GetPropertyOrNull("title")
-                ?.GetNonWhiteSpaceStringOrNull();
+                ?.FirstOrDefault();
 
-            yield return new MusicBrainzRecording(artist, artistSort, title, album);
+            var album = firstRelease?.GetPropertyOrNull("title")?.GetNonWhiteSpaceStringOrNull();
+
+            int? year = null;
+            var dateText = firstRelease?.GetPropertyOrNull("date")?.GetNonWhiteSpaceStringOrNull();
+            if (
+                !string.IsNullOrWhiteSpace(dateText)
+                && dateText.Length >= 4
+                && int.TryParse(dateText[..4], out var parsedYear)
+            )
+            {
+                year = parsedYear;
+            }
+
+            yield return new MusicBrainzRecording(artist, artistSort, title, album, year);
         }
     }
 }

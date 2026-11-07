@@ -70,8 +70,56 @@ public partial class LocalizationManager
                 **$title** — video title
                 **$author** — video author
                 """,
-            [nameof(ParallelLimitLabel)] = "Parallel limit",
-            [nameof(ParallelLimitTooltip)] = "How many downloads can be active at the same time",
+            [nameof(ParallelLimitLabel)] = "Simultaneous downloads",
+            [nameof(ParallelLimitTooltip)] =
+                "How many downloads can be active at the same time (1-20)",
+            [nameof(SettingsTabGeneral)] = "General",
+            [nameof(SettingsTabDownload)] = "Download",
+            [nameof(SettingsTabNetwork)] = "Network",
+            [nameof(SettingsTabAudio)] = "Audio",
+            [nameof(SettingsTabVideo)] = "Video",
+            [nameof(SettingsTabTags)] = "Tags",
+            [nameof(SettingsTabAuthorization)] = "Authorization",
+            [nameof(OkButton)] = "OK",
+            [nameof(ApplyButton)] = "Apply",
+            [nameof(RestoreDefaultsButton)] = "Restore defaults",
+            [nameof(VideoFolderLabel)] = "Video folder",
+            [nameof(AudioFolderLabel)] = "Audio folder",
+            [nameof(SameFolderAsAudioLabel)] = "Use audio folder for video",
+            [nameof(PlaylistSubfolderLabel)] = "Playlist subfolder",
+            [nameof(AddCardsOnTopLabel)] = "Add new cards on top",
+            [nameof(AutoStartReadyLabel)] = "Start downloads when ready",
+            [nameof(AutoRemoveCompletedLabel)] = "Remove completed cards",
+            [nameof(AutoExpandPlaylistLabel)] =
+                "Load full playlist when pasting a video with a playlist link",
+            [nameof(AutoAddClipboardLabel)] = "Add copied YouTube links",
+            [nameof(MinimizeToTrayLabel)] = "Minimize to tray",
+            [nameof(LoudnormLabel)] = "Normalize loudness",
+            [nameof(ProxyTestButton)] = "Test proxy",
+            [nameof(ProxyTestingLabel)] = "Testing...",
+            [nameof(ProxyTestSuccessLabel)] = "Proxy works",
+            [nameof(ProxyTestFailedLabel)] = "Proxy failed",
+            [nameof(ConnectionsPerDownloadLabel)] = "Connections per download",
+            [nameof(CompactLabel)] = "Compact",
+            [nameof(TitleLabel)] = "Title",
+            [nameof(ArtistLabel)] = "Artist",
+            [nameof(AlbumLabel)] = "Album",
+            [nameof(YearLabel)] = "Year",
+            [nameof(OpenFolderLabel)] = "Open folder",
+            [nameof(CopyLinkLabel)] = "Copy link",
+            [nameof(SaveAudioLabel)] = "Save audio",
+            [nameof(DownloadAgainLabel)] = "Download again",
+            [nameof(PauseLabel)] = "Pause",
+            [nameof(ResumeLabel)] = "Resume",
+            [nameof(SubtitlesLabel)] = "Subtitles",
+            [nameof(UseProxyLabel)] = "Use proxy",
+            [nameof(UseProxyTooltip)] =
+                "Send YouTube requests, downloads, tagging, and updates through this proxy while it is enabled.",
+            [nameof(ProxyProtocolLabel)] = "Protocol",
+            [nameof(ProxyHostLabel)] = "Host",
+            [nameof(ProxyPortLabel)] = "Port",
+            [nameof(ProxyUsernameLabel)] = "Username",
+            [nameof(ProxyPasswordLabel)] = "Password",
             [nameof(FFmpegPathLabel)] = "FFmpeg path",
             [nameof(FFmpegPathTooltip)] =
                 "Path to the FFmpeg executable. Leave empty to use auto-detection.",
@@ -96,13 +144,41 @@ public partial class LocalizationManager
             [nameof(AudioLabel)] = "Audio",
             [nameof(UpscaledLabel)] = "Upscaled",
             [nameof(FormatLabel)] = "Format",
+            [nameof(VideoLabel)] = "Video",
+            [nameof(AudioBitrateLabel)] = "Audio bitrate",
+            [nameof(PasteButton)] = "Paste link",
+            [nameof(PasteTooltip)] = "Paste a link from the clipboard and add it to the queue",
+            [nameof(DownloadAllButton)] = "Download all",
+            [nameof(WaitingLabel)] = "Waiting...",
+            [nameof(DownloadedProgress)] = "Downloaded {0} of {1}",
+            [nameof(UnsupportedBitrateTooltip)] =
+                "YouTube did not provide this bitrate. The app can still encode the file at this rate.",
+            [nameof(GenreLabel)] = "Genre",
+            [nameof(DateLabel)] = "Date",
+            [nameof(SpeedLimitLabel)] = "Speed limit",
+            [nameof(UnlimitedLabel)] = "Unlimited",
+            [nameof(HistoryTooltip)] = "Download history",
+            [nameof(HistoryTitle)] = "History",
+            [nameof(ClearHistoryButton)] = "CLEAR",
+            [nameof(HelpTooltip)] = "Help",
+            [nameof(HelpTitle)] = "Help",
+            [nameof(HelpMessage)] = """
+                Paste a link to add videos to the queue. Nothing downloads until you press a download button.
+
+                The top bar sets the format and bitrate for cards that have not started. Each card can change its own quality, and audio cards can change bitrate.
+
+                A muted bitrate with an information icon was not provided by YouTube. The app can still encode it.
+
+                The card fills from the left while it downloads.
+                """,
+            [nameof(ClipboardEmptyMessage)] = "The clipboard does not contain a link",
             // Download Multiple Setup
             [nameof(ContainerLabel)] = "Container",
             [nameof(VideoQualityLabel)] = "Video quality",
             // Common buttons
             [nameof(CloseButton)] = "CLOSE",
             [nameof(DownloadButton)] = "DOWNLOAD",
-            [nameof(CancelButton)] = "CANCEL",
+            [nameof(CancelButton)] = "Cancel",
             // Dialog messages
             [nameof(UkraineSupportTitle)] = "Thank you for supporting Ukraine!",
             [nameof(UkraineSupportMessage)] = """

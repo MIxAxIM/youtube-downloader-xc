@@ -1,12 +1,16 @@
 using System;
+using System.Linq;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Platform;
 using Material.Styles.Themes;
 using Microsoft.Extensions.DependencyInjection;
 using PowerKit.Extensions;
+using YoutubeDownloader.Core.Downloading;
 using YoutubeDownloader.Framework;
 using YoutubeDownloader.Localization;
 using YoutubeDownloader.Services;
@@ -51,6 +55,7 @@ public partial class App : Application, IDisposable
         services.AddTransient<DownloadMultipleSetupViewModel>();
         services.AddTransient<DownloadSingleSetupViewModel>();
         services.AddTransient<MessageBoxViewModel>();
+        services.AddTransient<HistoryViewModel>();
         services.AddTransient<SettingsViewModel>();
 
         _services = services.BuildServiceProvider(true);
@@ -99,6 +104,8 @@ public partial class App : Application, IDisposable
     {
         // Load settings
         _settingsService.Load();
+        _settingsService.ApplyProxy();
+        _settingsService.ApplySpeedLimit();
 
         // Initialize and configure the main window
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -124,6 +131,43 @@ public partial class App : Application, IDisposable
     private void Application_OnActualThemeVariantChanged(object? sender, EventArgs args) =>
         // Re-initialize the theme when the system theme changes
         InitializeTheme();
+
+    private void TrayOpen_OnClick(object? sender, EventArgs e)
+    {
+        if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+            return;
+
+        desktop.MainWindow?.Show();
+        if (desktop.MainWindow is not null)
+            desktop.MainWindow.WindowState = WindowState.Normal;
+        desktop.MainWindow?.Activate();
+    }
+
+    private void TrayPauseResume_OnClick(object? sender, EventArgs e)
+    {
+        if (
+            ApplicationLifetime
+            is not IClassicDesktopStyleApplicationLifetime
+            {
+                MainWindow.DataContext: MainViewModel main
+            }
+        )
+            return;
+
+        foreach (
+            var card in main.Dashboard.Downloads.Where(card =>
+                card.Status == DownloadStatus.Started
+            )
+        )
+        {
+            if (card.IsPaused)
+                card.ResumeDownloadCommand.Execute(null);
+            else
+                card.PauseDownloadCommand.Execute(null);
+        }
+    }
+
+    private void TrayQuit_OnClick(object? sender, EventArgs e) => Shutdown();
 
     public void Dispose()
     {

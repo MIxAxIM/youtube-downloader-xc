@@ -75,6 +75,14 @@ public partial class LocalizationManager
             [nameof(ParallelLimitLabel)] = "Límite paralelo",
             [nameof(ParallelLimitTooltip)] =
                 "Cuántas descargas pueden estar activas al mismo tiempo",
+            [nameof(UseProxyLabel)] = "Usar proxy",
+            [nameof(UseProxyTooltip)] =
+                "Enviar las solicitudes de YouTube, las descargas, las etiquetas y las actualizaciones a través de este proxy mientras esté activado.",
+            [nameof(ProxyProtocolLabel)] = "Protocolo",
+            [nameof(ProxyHostLabel)] = "Host",
+            [nameof(ProxyPortLabel)] = "Puerto",
+            [nameof(ProxyUsernameLabel)] = "Usuario",
+            [nameof(ProxyPasswordLabel)] = "Contraseña",
             [nameof(FFmpegPathLabel)] = "Ruta de FFmpeg",
             [nameof(FFmpegPathTooltip)] =
                 "Ruta al ejecutable de FFmpeg. Dejar vacío para detección automática.",
@@ -99,6 +107,34 @@ public partial class LocalizationManager
             [nameof(AudioLabel)] = "Audio",
             [nameof(UpscaledLabel)] = "Reescalado",
             [nameof(FormatLabel)] = "Formato",
+            [nameof(VideoLabel)] = "Vídeo",
+            [nameof(AudioBitrateLabel)] = "Tasa de bits de audio",
+            [nameof(PasteButton)] = "Pegar enlace",
+            [nameof(PasteTooltip)] = "Pegar un enlace del portapapeles y añadirlo a la cola",
+            [nameof(DownloadAllButton)] = "Descargar todo",
+            [nameof(WaitingLabel)] = "Esperando...",
+            [nameof(DownloadedProgress)] = "Descargado {0} de {1}",
+            [nameof(UnsupportedBitrateTooltip)] =
+                "YouTube no ofreció esta tasa. La aplicación aún puede codificar el archivo a esa tasa.",
+            [nameof(GenreLabel)] = "Género",
+            [nameof(DateLabel)] = "Fecha",
+            [nameof(SpeedLimitLabel)] = "Límite de velocidad",
+            [nameof(UnlimitedLabel)] = "Ilimitado",
+            [nameof(HistoryTooltip)] = "Historial",
+            [nameof(HistoryTitle)] = "Historial",
+            [nameof(ClearHistoryButton)] = "BORRAR",
+            [nameof(HelpTooltip)] = "Ayuda",
+            [nameof(HelpTitle)] = "Ayuda",
+            [nameof(HelpMessage)] = """
+                Pega un enlace para añadir videos a la cola. No se descarga nada hasta que pulses un botón de descarga.
+
+                La barra superior fija el formato y la tasa de las tarjetas que no han empezado. Cada tarjeta puede cambiar su calidad, y las de audio su tasa.
+
+                Una tasa atenuada con un icono de información no la ofreció YouTube. La aplicación aún puede codificarla.
+
+                La tarjeta se llena de izquierda a derecha mientras descarga.
+                """,
+            [nameof(ClipboardEmptyMessage)] = "El portapapeles no contiene un enlace",
             // Download Multiple Setup
             [nameof(ContainerLabel)] = "Contenedor",
             [nameof(VideoQualityLabel)] = "Calidad de video",

@@ -12,7 +12,7 @@ namespace YoutubeDownloader.Services;
 
 public partial class SettingsService
 {
-    private class AuthCookiesEncryptionConverter : JsonConverter<IReadOnlyList<Cookie>?>
+    private static class SettingsProtection
     {
         private static readonly Lazy<byte[]> Key = new(() =>
             Rfc2898DeriveBytes.Pbkdf2(
@@ -24,6 +24,44 @@ public partial class SettingsService
             )
         );
 
+        public static string EncryptToHex(byte[] plaintext)
+        {
+            var encryptedData = new byte[28 + plaintext.Length];
+
+            RandomNumberGenerator.Fill(encryptedData.AsSpan(0, 12));
+
+            // Layout: nonce (12 bytes) | tag (16 bytes) | cipher
+            using var aes = new AesGcm(Key.Value, 16);
+            aes.Encrypt(
+                encryptedData.AsSpan(0, 12),
+                plaintext,
+                encryptedData.AsSpan(28),
+                encryptedData.AsSpan(12, 16)
+            );
+
+            return Convert.ToHexStringLower(encryptedData);
+        }
+
+        public static byte[] DecryptFromHex(string hex)
+        {
+            var encryptedData = Convert.FromHexString(hex);
+            var plaintext = new byte[encryptedData.AsSpan(28).Length];
+
+            // Layout: nonce (12 bytes) | tag (16 bytes) | cipher
+            using var aes = new AesGcm(Key.Value, 16);
+            aes.Decrypt(
+                encryptedData.AsSpan(0, 12),
+                encryptedData.AsSpan(28),
+                encryptedData.AsSpan(12, 16),
+                plaintext
+            );
+
+            return plaintext;
+        }
+    }
+
+    private class AuthCookiesEncryptionConverter : JsonConverter<IReadOnlyList<Cookie>?>
+    {
         public override IReadOnlyList<Cookie>? Read(
             ref Utf8JsonReader reader,
             Type typeToConvert,
@@ -39,17 +77,7 @@ public partial class SettingsService
 
             try
             {
-                var encryptedData = Convert.FromHexString(value);
-                var cookieData = new byte[encryptedData.AsSpan(28).Length];
-
-                // Layout: nonce (12 bytes) | tag (16 bytes) | cipher
-                using var aes = new AesGcm(Key.Value, 16);
-                aes.Decrypt(
-                    encryptedData.AsSpan(0, 12),
-                    encryptedData.AsSpan(28),
-                    encryptedData.AsSpan(12, 16),
-                    cookieData
-                );
+                var cookieData = SettingsProtection.DecryptFromHex(value);
 
                 return JsonSerializer
                     .Deserialize<IReadOnlyList<CookieData>>(cookieData)
@@ -96,21 +124,7 @@ public partial class SettingsService
                 )
             );
 
-            var encryptedData = new byte[28 + cookieData.Length];
-
-            // Nonce
-            RandomNumberGenerator.Fill(encryptedData.AsSpan(0, 12));
-
-            // Layout: nonce (12 bytes) | tag (16 bytes) | cipher
-            using var aes = new AesGcm(Key.Value, 16);
-            aes.Encrypt(
-                encryptedData.AsSpan(0, 12),
-                cookieData,
-                encryptedData.AsSpan(28),
-                encryptedData.AsSpan(12, 16)
-            );
-
-            writer.WriteStringValue(Convert.ToHexStringLower(encryptedData));
+            writer.WriteStringValue(SettingsProtection.EncryptToHex(cookieData));
         }
 
         private record CookieData(

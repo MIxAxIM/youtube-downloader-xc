@@ -42,10 +42,25 @@ public partial class DownloadMultipleSetupViewModel(
     public partial VideoQualityPreference SelectedVideoQualityPreference { get; set; } =
         VideoQualityPreference.Highest;
 
+    [ObservableProperty]
+    public partial bool IsAudioMode { get; set; }
+
+    [ObservableProperty]
+    public partial AudioBitratePreference SelectedAudioBitratePreference { get; set; } =
+        AudioBitratePreference.Source;
+
     public ObservableCollection<IVideo> SelectedVideos { get; } = [];
 
-    public IReadOnlyList<Container> AvailableContainers { get; } =
-    [Container.Mp4, Container.WebM, Container.Mp3, new("ogg")];
+    public IReadOnlyList<Container> VideoContainers { get; } = [Container.Mp4, Container.WebM];
+
+    public IReadOnlyList<Container> AudioContainers { get; } =
+    [Container.Mp3, new("ogg"), Container.WebM, Container.Mp4, new("m4a")];
+
+    public IReadOnlyList<Container> VisibleContainers =>
+        IsAudioMode ? AudioContainers : VideoContainers;
+
+    public IReadOnlyList<AudioBitratePreference> AvailableAudioBitratePreferences { get; } =
+        Enum.GetValues<AudioBitratePreference>();
 
     public IReadOnlyList<VideoQualityPreference> AvailableVideoQualityPreferences { get; } =
         // Without .AsEnumerable(), the below line throws a compile-time error starting with .NET SDK v9.0.200
@@ -53,11 +68,22 @@ public partial class DownloadMultipleSetupViewModel(
 
     public override Task InitializeAsync()
     {
-        SelectedContainer = settingsService.LastContainer;
+        SelectedAudioBitratePreference = settingsService.LastAudioBitratePreference;
         SelectedVideoQualityPreference = settingsService.LastVideoQualityPreference;
+        IsAudioMode = settingsService.LastDownloadMediaKind == DownloadMediaKind.Audio;
+        SelectedContainer = VisibleContainers.Contains(settingsService.LastContainer)
+            ? settingsService.LastContainer
+            : VisibleContainers[0];
         SelectedVideos.CollectionChanged += (_, _) => ConfirmCommand.NotifyCanExecuteChanged();
 
         return Task.CompletedTask;
+    }
+
+    partial void OnIsAudioModeChanged(bool value)
+    {
+        OnPropertyChanged(nameof(VisibleContainers));
+        if (!VisibleContainers.Contains(SelectedContainer))
+            SelectedContainer = VisibleContainers[0];
     }
 
     [RelayCommand]
@@ -101,7 +127,12 @@ public partial class DownloadMultipleSetupViewModel(
             downloads.Add(
                 viewModelManager.GetDownloadViewModel(
                     video,
-                    new VideoDownloadPreference(SelectedContainer, SelectedVideoQualityPreference),
+                    new VideoDownloadPreference(
+                        SelectedContainer,
+                        SelectedVideoQualityPreference,
+                        SelectedAudioBitratePreference,
+                        IsAudioMode
+                    ),
                     filePath
                 )
             );
@@ -109,6 +140,10 @@ public partial class DownloadMultipleSetupViewModel(
 
         settingsService.LastContainer = SelectedContainer;
         settingsService.LastVideoQualityPreference = SelectedVideoQualityPreference;
+        settingsService.LastDownloadMediaKind = IsAudioMode
+            ? DownloadMediaKind.Audio
+            : DownloadMediaKind.Video;
+        settingsService.LastAudioBitratePreference = SelectedAudioBitratePreference;
 
         Close(downloads);
     }

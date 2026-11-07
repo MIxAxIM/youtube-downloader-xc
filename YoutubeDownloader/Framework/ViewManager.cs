@@ -20,6 +20,7 @@ public partial class ViewManager
             DownloadMultipleSetupViewModel => new DownloadMultipleSetupView(),
             DownloadSingleSetupViewModel => new DownloadSingleSetupView(),
             MessageBoxViewModel => new MessageBoxView(),
+            HistoryViewModel => new HistoryView(),
             SettingsViewModel => new SettingsView(),
             _ => null,
         };

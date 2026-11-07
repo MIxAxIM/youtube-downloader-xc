@@ -13,50 +13,57 @@
     <DockPanel>
         <!--  Header  -->
         <StackPanel
-            Background="{DynamicResource MaterialDarkBackgroundBrush}"
+            Background="{DynamicResource AppChromeBrush}"
             DockPanel.Dock="Top"
             Orientation="Vertical">
-            <Grid Margin="12,12,8,12" ColumnDefinitions="*,Auto,Auto">
+            <Grid Margin="12,12,8,8" ColumnDefinitions="*,Auto,Auto,Auto">
                 <!--  Query  -->
                 <materialStyles:Card Grid.Column="0">
-                    <TextBox
-                        x:Name="QueryTextBox"
-                        AcceptsReturn="True"
-                        FontSize="16"
-                        MaxLines="4"
-                        PlaceholderText="{Binding LocalizationManager.QueryPlaceholderText}"
-                        ScrollViewer.HorizontalScrollBarVisibility="Hidden"
-                        Text="{Binding Query}"
-                        Theme="{DynamicResource SoloTextBox}"
-                        ToolTip.Tip="{Binding LocalizationManager.QueryTooltip}">
-                        <TextBox.InnerLeftContent>
-                            <materialIcons:MaterialIcon
-                                Width="24"
-                                Height="24"
-                                Margin="4,0,8,0"
-                                Kind="Search" />
-                        </TextBox.InnerLeftContent>
-                        <TextBox.InnerRightContent>
-                            <Button
-                                x:Name="ProcessQueryButton"
-                                Margin="8,0,0,0"
-                                Padding="4"
-                                Command="{Binding ProcessQueryCommand}"
-                                IsDefault="True"
-                                Theme="{DynamicResource MaterialFlatButton}"
-                                ToolTip.Tip="{Binding LocalizationManager.ProcessQueryTooltip}">
-                                <materialIcons:MaterialIcon
-                                    Width="24"
-                                    Height="24"
-                                    Kind="ArrowRight" />
-                            </Button>
-                        </TextBox.InnerRightContent>
-                    </TextBox>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <AutoCompleteBox
+                            x:Name="QueryTextBox"
+                            Grid.Column="0"
+                            FontSize="16"
+                            FilterMode="ContainsOrdinal"
+                            ItemsSource="{Binding QuerySuggestions}"
+                            PlaceholderText="{Binding LocalizationManager.QueryPlaceholderText}"
+                            Text="{Binding Query}"
+                            ToolTip.Tip="{Binding LocalizationManager.QueryTooltip}" />
+                        <Button
+                            x:Name="ProcessQueryButton"
+                            Grid.Column="1"
+                            Margin="8,0,0,0"
+                            Padding="4"
+                            Command="{Binding ProcessQueryCommand}"
+                            IsDefault="True"
+                            Theme="{DynamicResource MaterialFlatButton}"
+                            ToolTip.Tip="{Binding LocalizationManager.ProcessQueryTooltip}">
+                            <materialIcons:MaterialIcon Width="24" Height="24" Kind="ArrowRight" />
+                        </Button>
+                    </Grid>
                 </materialStyles:Card>
+
+                <!--  Paste  -->
+                <Button
+                    Grid.Column="1"
+                    Margin="8,0,0,0"
+                    Padding="12,8"
+                    VerticalAlignment="Center"
+                    Classes="primary"
+                    Command="{Binding PasteCommand}"
+                    ToolTip.Tip="{Binding LocalizationManager.PasteTooltip}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <materialIcons:MaterialIcon
+                            Width="20"
+                            Height="20"
+                            Kind="ContentPaste" />
+                        <TextBlock VerticalAlignment="Center" Text="{Binding LocalizationManager.PasteButton}" />
+                    </StackPanel>
+                </Button>
 
                 <!--  Auth button  -->
                 <Button
-                    Grid.Column="1"
+                    Grid.Column="2"
                     Margin="8,0,0,0"
                     Padding="8"
                     VerticalAlignment="Center"
@@ -72,7 +79,7 @@
 
                 <!--  Settings button  -->
                 <Button
-                    Grid.Column="2"
+                    Grid.Column="3"
                     Margin="8,0,0,0"
                     Padding="8"
                     VerticalAlignment="Center"
@@ -87,6 +94,109 @@
                 </Button>
             </Grid>
 
+            <!--  Defaults  -->
+            <Grid Margin="12,0,12,8" ColumnDefinitions="Auto,160,180,*">
+                <StackPanel
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="6">
+                    <materialIcons:MaterialIcon
+                        Width="18"
+                        Height="18"
+                        VerticalAlignment="Center"
+                        Kind="VideoOutline" />
+                    <TextBlock VerticalAlignment="Center" Text="{Binding LocalizationManager.VideoLabel}" />
+                    <ToggleSwitch IsChecked="{Binding IsAudioDefault}" />
+                    <materialIcons:MaterialIcon
+                        Width="18"
+                        Height="18"
+                        VerticalAlignment="Center"
+                        Kind="MusicNote" />
+                    <TextBlock VerticalAlignment="Center" Text="{Binding LocalizationManager.AudioLabel}" />
+                </StackPanel>
+
+                <ComboBox
+                    Grid.Column="1"
+                    Margin="12,0,0,0"
+                    VerticalAlignment="Center"
+                    ItemsSource="{Binding FormatChoices}"
+                    SelectedItem="{Binding SelectedFormat}" />
+
+                <ComboBox
+                    Grid.Column="2"
+                    Margin="8,0,0,0"
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding IsAudioDefault}"
+                    ItemsSource="{Binding DefaultBitrateChoices}"
+                    SelectedItem="{Binding SelectedDefaultBitrate}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <TextBlock
+                                    Classes.unsupported="{Binding !IsNative}"
+                                    VerticalAlignment="Center"
+                                    Text="{Binding Label}">
+                                    <TextBlock.Styles>
+                                        <Style Selector="TextBlock.unsupported">
+                                            <Setter Property="Foreground" Value="#C47B00" />
+                                        </Style>
+                                    </TextBlock.Styles>
+                                </TextBlock>
+                                <materialIcons:MaterialIcon
+                                    Width="16"
+                                    Height="16"
+                                    VerticalAlignment="Center"
+                                    IsVisible="{Binding !IsNative}"
+                                    Kind="InformationOutline"
+                                    ToolTip.Tip="{Binding #UserControl.DataContext.LocalizationManager.UnsupportedBitrateTooltip}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <Button
+                    Grid.Column="3"
+                    Margin="8,0,0,0"
+                    HorizontalAlignment="Right"
+                    Padding="14,8"
+                    Classes="primary"
+                    Command="{Binding DownloadAllCommand}"
+                    Content="{Binding LocalizationManager.DownloadAllButton}" />
+                <Button
+                    Grid.Column="3"
+                    Margin="0,0,120,0"
+                    HorizontalAlignment="Right"
+                    Padding="8"
+                    Theme="{DynamicResource MaterialFlatButton}"
+                    ToolTip.Tip="{Binding LocalizationManager.SettingsTooltip}">
+                    <Button.Flyout>
+                        <MenuFlyout Placement="BottomEdgeAlignedRight">
+                            <MenuItem Command="{Binding PasteCommand}" Header="{Binding LocalizationManager.PasteButton}" InputGesture="Ctrl+V" />
+                            <MenuItem Command="{Binding DownloadAllCommand}" Header="{Binding LocalizationManager.DownloadAllButton}" />
+                            <MenuItem Command="{Binding CancelAllDownloadsCommand}" Header="{Binding LocalizationManager.ContextMenuCancelAll}" />
+                            <MenuItem Command="{Binding RemoveInactiveDownloadsCommand}" Header="Stop waiting" />
+                            <MenuItem Command="{Binding OpenFolderCommand}" Header="{Binding LocalizationManager.OpenFolderLabel}" />
+                            <MenuItem Command="{Binding ShowHistoryCommand}" Header="{Binding LocalizationManager.HistoryTitle}" />
+                            <MenuItem Command="{Binding ShowSettingsCommand}" Header="{Binding LocalizationManager.SettingsTitle}" />
+                            <MenuItem Command="{Binding ToggleFilterVisibleCommand}" Header="Show / hide filter" />
+                            <MenuItem Command="{Binding ToggleTopmostCommand}" Header="Stay on top" />
+                            <MenuItem Command="{Binding OpenErrorLogCommand}" Header="Error log" />
+                            <MenuItem Command="{Binding UndoRemoveCommand}" Header="Undo remove" IsEnabled="{Binding CanUndoRemove}" />
+                            <MenuItem Header="Sort">
+                                <MenuItem Command="{Binding SortByTitleCommand}" Header="Title" />
+                                <MenuItem Command="{Binding SortByDurationCommand}" Header="Duration" />
+                                <MenuItem Command="{Binding SortByStatusCommand}" Header="Status" />
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Command="{Binding ShowHelpCommand}" Header="{Binding LocalizationManager.HelpTitle}" />
+                            <MenuItem Command="{Binding QuitAppCommand}" Header="Quit" />
+                        </MenuFlyout>
+                    </Button.Flyout>
+                    <materialIcons:MaterialIcon Width="20" Height="20" Kind="Cog" />
+                </Button>
+            </Grid>
+
             <!--  Progress  -->
             <ProgressBar
                 Height="2"
@@ -95,8 +205,76 @@
                 Value="{Binding Progress.Current.Fraction, Mode=OneWay}" />
         </StackPanel>
 
+        <!--  Bottom bar  -->
+        <Border
+            Padding="8,6"
+            Background="{DynamicResource AppChromeBrush}"
+            BorderBrush="{DynamicResource AppChromeEdgeBrush}"
+            BorderThickness="0,1,0,0"
+            DockPanel.Dock="Bottom">
+            <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto,Auto">
+                <Button
+                    Grid.Column="0"
+                    Padding="8"
+                    Command="{Binding ClearCompletedCommand}"
+                    Theme="{DynamicResource MaterialFlatButton}"
+                    ToolTip.Tip="{Binding LocalizationManager.ContextMenuRemoveSuccessful}">
+                    <materialIcons:MaterialIcon Width="20" Height="20" Kind="PlaylistRemove" />
+                </Button>
+                <TextBlock
+                    Grid.Column="1"
+                    Margin="8,0,8,0"
+                    VerticalAlignment="Center"
+                    Text="{Binding LocalizationManager.SpeedLimitLabel}" />
+                <ComboBox
+                    Grid.Column="2"
+                    MinWidth="140"
+                    ItemsSource="{Binding SpeedLimits}"
+                    SelectedItem="{Binding SelectedSpeedLimit}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Label}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <StackPanel
+                    Grid.Column="3"
+                    Margin="16,0,0,0"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="16">
+                    <TextBlock Text="{Binding SpeedText}" />
+                    <TextBlock Opacity="0.8" Text="{Binding UsageText}" />
+                </StackPanel>
+                <Button
+                    Grid.Column="4"
+                    Padding="8"
+                    Command="{Binding OpenFolderCommand}"
+                    Theme="{DynamicResource MaterialFlatButton}"
+                    ToolTip.Tip="{Binding LocalizationManager.ShowFileTooltip}">
+                    <materialIcons:MaterialIcon Width="20" Height="20" Kind="FolderOpen" />
+                </Button>
+                <Button
+                    Grid.Column="5"
+                    Padding="8"
+                    Command="{Binding ShowHistoryCommand}"
+                    Theme="{DynamicResource MaterialFlatButton}"
+                    ToolTip.Tip="{Binding LocalizationManager.HistoryTooltip}">
+                    <materialIcons:MaterialIcon Width="20" Height="20" Kind="History" />
+                </Button>
+                <Button
+                    Grid.Column="6"
+                    Padding="8"
+                    Command="{Binding ShowHelpCommand}"
+                    Theme="{DynamicResource MaterialFlatButton}"
+                    ToolTip.Tip="{Binding LocalizationManager.HelpTooltip}">
+                    <materialIcons:MaterialIcon Width="20" Height="20" Kind="HelpCircleOutline" />
+                </Button>
+            </Grid>
+        </Border>
+
         <!--  Body  -->
-        <Panel Background="{DynamicResource MaterialCardBackgroundBrush}" DockPanel.Dock="Bottom">
+        <Panel Background="{DynamicResource AppPageBrush}" DockPanel.Dock="Bottom">
             <!--  Placeholder  -->
             <StackPanel
                 Margin="8,32,8,8"
@@ -120,206 +298,382 @@
                     TextWrapping="Wrap" />
             </StackPanel>
 
-            <!--  Downloads  -->
-            <DataGrid
-                ColumnWidth="Auto"
-                HorizontalScrollBarVisibility="Disabled"
-                IsVisible="{Binding !!Downloads.Count}"
-                ItemsSource="{Binding Downloads}"
-                VerticalScrollBarVisibility="Visible">
-                <DataGrid.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Command="{Binding RemoveSuccessfulDownloadsCommand}" Header="{Binding LocalizationManager.ContextMenuRemoveSuccessful}" />
-                        <MenuItem Command="{Binding RemoveInactiveDownloadsCommand}" Header="{Binding LocalizationManager.ContextMenuRemoveInactive}" />
-                        <Separator />
-                        <MenuItem Command="{Binding RestartFailedDownloadsCommand}" Header="{Binding LocalizationManager.ContextMenuRestartFailed}" />
-                        <Separator />
-                        <MenuItem Command="{Binding CancelAllDownloadsCommand}" Header="{Binding LocalizationManager.ContextMenuCancelAll}" />
-                    </ContextMenu>
-                </DataGrid.ContextMenu>
-                <DataGrid.Columns>
-                    <!--  Thumbnail  -->
-                    <DataGridTemplateColumn>
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Image
-                                    Width="48"
-                                    Height="48"
-                                    asyncImageLoader:ImageLoader.Source="{Binding Video, Converter={x:Static converters:VideoToLowestQualityThumbnailUrlStringConverter.Instance}}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-
-                    <!--  File name  -->
-                    <DataGridTemplateColumn
-                        Width="*"
-                        Header="{Binding #UserControl.DataContext.LocalizationManager.DownloadsFileColumnHeader}"
-                        SortMemberPath="FileName">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock
-                                    VerticalAlignment="Center"
-                                    FontSize="14"
-                                    Foreground="{DynamicResource MaterialBodyBrush}"
-                                    Text="{Binding FileName}"
-                                    TextTrimming="CharacterEllipsis"
-                                    ToolTip.Tip="{Binding FileName}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-
-                    <!--  Status  -->
-                    <DataGridTemplateColumn
-                        MinWidth="100"
-                        Header="{Binding #UserControl.DataContext.LocalizationManager.DownloadsStatusColumnHeader}"
-                        SortMemberPath="Progress.Current.Fraction">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Grid ColumnDefinitions="Auto,Auto">
-                                    <!--  Progress  -->
-                                    <ProgressBar
+            <!--  Downloads -->
+            <DockPanel IsVisible="{Binding !!Downloads.Count}">
+                <Grid
+                    Margin="8,4"
+                    ColumnDefinitions="*,Auto,Auto,Auto"
+                    DockPanel.Dock="Top"
+                    IsVisible="{Binding IsFilterVisible}">
+                    <TextBox
+                        Grid.Column="0"
+                        PlaceholderText="Filter by title"
+                        Text="{Binding QueueSearch}" />
+                    <ComboBox
+                        Grid.Column="1"
+                        Margin="8,0,0,0"
+                        MinWidth="120"
+                        ItemsSource="{Binding QueueFilters}"
+                        SelectedItem="{Binding QueueFilter}" />
+                    <ToggleSwitch
+                        Grid.Column="2"
+                        Margin="8,0,0,0"
+                        IsChecked="{Binding IsCompact}"
+                        OffContent="{Binding LocalizationManager.CompactLabel}"
+                        OnContent="{Binding LocalizationManager.CompactLabel}" />
+                </Grid>
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding VisibleDownloads}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Command="{Binding RemoveSuccessfulDownloadsCommand}" Header="{Binding LocalizationManager.ContextMenuRemoveSuccessful}" />
+                            <MenuItem Command="{Binding RemoveInactiveDownloadsCommand}" Header="{Binding LocalizationManager.ContextMenuRemoveInactive}" />
+                            <Separator />
+                            <MenuItem Command="{Binding RestartFailedDownloadsCommand}" Header="{Binding LocalizationManager.ContextMenuRestartFailed}" />
+                            <Separator />
+                            <MenuItem Command="{Binding CancelAllDownloadsCommand}" Header="{Binding LocalizationManager.ContextMenuCancelAll}" />
+                        </ContextMenu>
+                    </ItemsControl.ContextMenu>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border
+                                Classes="queueCard"
+                                Classes.selected="{Binding IsSelected}"
+                                Margin="10,6"
+                                ClipToBounds="True"
+                                Opacity="0"
+                                PointerPressed="Card_OnPointerPressed"
+                                DoubleTapped="Card_OnDoubleTapped">
+                                <Border.Transitions>
+                                    <Transitions>
+                                        <DoubleTransition Property="Opacity" Duration="0:0:0.25" />
+                                    </Transitions>
+                                </Border.Transitions>
+                                <Border.Styles>
+                                    <Style Selector="Border">
+                                        <Style.Animations>
+                                            <Animation Duration="0:0:0.28" FillMode="Forward">
+                                                <KeyFrame Cue="0%">
+                                                    <Setter Property="Opacity" Value="0" />
+                                                </KeyFrame>
+                                                <KeyFrame Cue="100%">
+                                                    <Setter Property="Opacity" Value="1" />
+                                                </KeyFrame>
+                                            </Animation>
+                                        </Style.Animations>
+                                    </Style>
+                                </Border.Styles>
+                                <Grid ColumnDefinitions="4,*">
+                                    <Border
                                         Grid.Column="0"
-                                        Margin="0,0,6,0"
-                                        IsIndeterminate="{Binding IsProgressIndeterminate}"
-                                        IsVisible="{Binding Status, Converter={x:Static converters:EqualityConverter.IsEqual}, ConverterParameter={x:Static components:DownloadStatus.Started}}"
-                                        Theme="{DynamicResource MaterialCircularProgressBar}"
-                                        Value="{Binding Progress.Current.Fraction, Mode=OneWay}" />
-
-                                    <!--  Status  -->
-                                    <TextBlock
-                                        x:Name="StatusTextBlock"
-                                        Grid.Column="1"
-                                        VerticalAlignment="Center"
-                                        Classes.canceled="{Binding Status, Converter={x:Static converters:EqualityConverter.IsEqual}, ConverterParameter={x:Static components:DownloadStatus.Canceled}}"
-                                        Classes.completed="{Binding Status, Converter={x:Static converters:EqualityConverter.IsEqual}, ConverterParameter={x:Static components:DownloadStatus.Completed}}"
-                                        Classes.enqueued="{Binding Status, Converter={x:Static converters:EqualityConverter.IsEqual}, ConverterParameter={x:Static components:DownloadStatus.Enqueued}}"
-                                        Classes.failed="{Binding Status, Converter={x:Static converters:EqualityConverter.IsEqual}, ConverterParameter={x:Static components:DownloadStatus.Failed}}"
-                                        Classes.started="{Binding Status, Converter={x:Static converters:EqualityConverter.IsEqual}, ConverterParameter={x:Static components:DownloadStatus.Started}}"
-                                        PointerReleased="StatusTextBlock_OnPointerReleased"
-                                        TextTrimming="CharacterEllipsis">
-                                        <TextBlock.Resources>
-                                            <ResourceDictionary>
-                                                <ResourceDictionary.ThemeDictionaries>
-                                                    <ResourceDictionary x:Key="Default">
-                                                        <SolidColorBrush x:Key="SuccessBrush" Color="DarkGreen" />
-                                                        <SolidColorBrush x:Key="CanceledBrush" Color="DarkOrange" />
-                                                        <SolidColorBrush x:Key="FailedBrush" Color="DarkRed" />
-                                                    </ResourceDictionary>
-                                                    <ResourceDictionary x:Key="Dark">
-                                                        <SolidColorBrush x:Key="SuccessBrush" Color="LightGreen" />
-                                                        <SolidColorBrush x:Key="CanceledBrush" Color="Orange" />
-                                                        <SolidColorBrush x:Key="FailedBrush" Color="OrangeRed" />
-                                                    </ResourceDictionary>
-                                                </ResourceDictionary.ThemeDictionaries>
-                                            </ResourceDictionary>
-                                        </TextBlock.Resources>
-                                        <TextBlock.Styles>
-                                            <Style Selector="TextBlock">
-                                                <Style Selector="^.enqueued">
-                                                    <Setter Property="Opacity" Value="0.7" />
-                                                    <Setter Property="Text" Value="{Binding LocalizationManager.DownloadStatusEnqueued}" />
-                                                </Style>
-                                                <Style Selector="^.started">
-                                                    <Setter Property="Text" Value="{Binding Progress.Current}" />
-                                                </Style>
-                                                <Style Selector="^.completed">
-                                                    <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
-                                                    <Setter Property="Text" Value="{Binding LocalizationManager.DownloadStatusCompleted}" />
-                                                </Style>
-                                                <Style Selector="^.canceled">
-                                                    <Setter Property="Foreground" Value="{DynamicResource CanceledBrush}" />
-                                                    <Setter Property="Text" Value="{Binding LocalizationManager.DownloadStatusCanceled}" />
-                                                </Style>
-                                                <Style Selector="^.failed">
-                                                    <Setter Property="Foreground" Value="{DynamicResource FailedBrush}" />
-                                                    <Setter Property="Text" Value="{Binding LocalizationManager.DownloadStatusFailed}" />
-                                                    <Setter Property="ToolTip.Tip">
-                                                        <Template>
-                                                            <TextBlock>
-                                                                <Run FontWeight="SemiBold" Text="{Binding LocalizationManager.ClickToCopyErrorTooltip}" />
-                                                                <LineBreak />
-                                                                <LineBreak />
-                                                                <Run Text="{Binding ErrorMessage}" />
+                                        Background="{Binding StatusAccentBrushKey, Converter={x:Static converters:StatusAccentBrushConverter.Instance}}"
+                                        CornerRadius="12,0,0,12" />
+                                    <Grid Grid.Column="1">
+                                    <Border IsHitTestVisible="False" CornerRadius="0,12,12,0" ClipToBounds="True">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                                <GradientStop Offset="0" Color="#66F9A825" />
+                                                <GradientStop Offset="{Binding FillFraction}" Color="#66F9A825" />
+                                                <GradientStop Offset="{Binding FillFraction}" Color="Transparent" />
+                                                <GradientStop Offset="1" Color="Transparent" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <Grid Margin="10,10,10,10" ColumnDefinitions="Auto,*,Auto">
+                                        <Border
+                                            Grid.Column="0"
+                                            Width="104"
+                                            Height="68"
+                                            CornerRadius="10"
+                                            ClipToBounds="True"
+                                            BoxShadow="0 2 8 0 #33000000">
+                                            <Panel>
+                                            <Image asyncImageLoader:ImageLoader.Source="{Binding Video, Converter={x:Static converters:VideoToLowestQualityThumbnailUrlStringConverter.Instance}}" Stretch="UniformToFill" />
+                                            <Border
+                                                Padding="4,1"
+                                                HorizontalAlignment="Left"
+                                                VerticalAlignment="Bottom"
+                                                Margin="4"
+                                                Background="#CC000000"
+                                                CornerRadius="4">
+                                                <TextBlock
+                                                    FontSize="11"
+                                                    Foreground="White"
+                                                    Text="{Binding DurationText}" />
+                                            </Border>
+                                            </Panel>
+                                        </Border>
+                                        <StackPanel Grid.Column="1" Margin="10,0,8,0" Spacing="4">
+                                            <TextBlock
+                                                FontSize="12"
+                                                FontWeight="SemiBold"
+                                                IsVisible="{Binding PlaylistTitle, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                Opacity="0.75"
+                                                Text="{Binding PlaylistTitle}"
+                                                TextTrimming="CharacterEllipsis" />
+                                            <TextBlock
+                                                FontSize="15"
+                                                Text="{Binding EditedTitle}"
+                                                TextTrimming="CharacterEllipsis"
+                                                ToolTip.Tip="{Binding EditedTitle}" />
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <ComboBox
+                                                    Width="110"
+                                                    VerticalAlignment="Center"
+                                                    IsEnabled="{Binding CanEdit}"
+                                                    ItemsSource="{Binding FormatChoices}"
+                                                    SelectedItem="{Binding SelectedContainer}" />
+                                                <ItemsControl IsVisible="{Binding ShowQualityChips}" ItemsSource="{Binding QualityChips}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <StackPanel Orientation="Horizontal" Spacing="4" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Button
+                                                            Padding="8,2"
+                                                            Classes.selected="{Binding IsSelected}"
+                                                            Command="{Binding $parent[ItemsControl].((components:DownloadViewModel)DataContext).SelectQualityCommand}"
+                                                            CommandParameter="{Binding}"
+                                                            Content="{Binding Label}">
+                                                            <Button.Styles>
+                                                                <Style Selector="Button.selected">
+                                                                    <Setter Property="Background" Value="#F9A825" />
+                                                                    <Setter Property="Foreground" Value="#1A1A1A" />
+                                                                </Style>
+                                                            </Button.Styles>
+                                                        </Button>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                            <ComboBox
+                                                IsEnabled="{Binding CanEdit}"
+                                                IsVisible="{Binding IsAudioMode}"
+                                                ItemsSource="{Binding BitrateChoices}"
+                                                SelectedItem="{Binding SelectedBitrateChoice}">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                                            <TextBlock
+                                                                Classes.unsupported="{Binding !IsNative}"
+                                                                VerticalAlignment="Center"
+                                                                Text="{Binding Label}">
+                                                                <TextBlock.Styles>
+                                                                    <Style Selector="TextBlock.unsupported">
+                                                                        <Setter Property="Foreground" Value="#C47B00" />
+                                                                    </Style>
+                                                                </TextBlock.Styles>
                                                             </TextBlock>
-                                                        </Template>
-                                                    </Setter>
-                                                    <Setter Property="Cursor" Value="Hand" />
-                                                </Style>
-                                            </Style>
-                                        </TextBlock.Styles>
-                                    </TextBlock>
+                                                            <materialIcons:MaterialIcon
+                                                                Width="16"
+                                                                Height="16"
+                                                                VerticalAlignment="Center"
+                                                                IsVisible="{Binding !IsNative}"
+                                                                Kind="InformationOutline"
+                                                                ToolTip.Tip="{Binding #UserControl.DataContext.LocalizationManager.UnsupportedBitrateTooltip}" />
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                            <UniformGrid
+                                                IsVisible="{Binding ShowAudioDetails}"
+                                                Columns="2">
+                                                <TextBox
+                                                    Margin="0,0,4,4"
+                                                    IsEnabled="{Binding CanEdit}"
+                                                    Text="{Binding EditedTitle}"
+                                                    PlaceholderText="{Binding LocalizationManager.TitleLabel}" />
+                                                <TextBox
+                                                    Margin="4,0,0,4"
+                                                    IsEnabled="{Binding CanEdit}"
+                                                    Text="{Binding EditedArtist}"
+                                                    PlaceholderText="{Binding LocalizationManager.ArtistLabel}" />
+                                                <TextBox
+                                                    Margin="0,0,4,0"
+                                                    IsEnabled="{Binding CanEdit}"
+                                                    Text="{Binding EditedYear}"
+                                                    PlaceholderText="{Binding LocalizationManager.YearLabel}" />
+                                                <TextBox
+                                                    Margin="4,0,0,0"
+                                                    IsEnabled="{Binding CanEdit}"
+                                                    Text="{Binding EditedAlbum}"
+                                                    PlaceholderText="{Binding LocalizationManager.AlbumLabel}" />
+                                            </UniformGrid>
+                                            <TextBlock
+                                                Opacity="0.7"
+                                                IsVisible="{Binding FileNamePreview, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                Text="{Binding FileNamePreview}"
+                                                TextTrimming="CharacterEllipsis" />
+                                            <TextBlock
+                                                Opacity="0.7"
+                                                IsVisible="{Binding EstimatedSizeText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                Text="{Binding EstimatedSizeText}" />
+                                            <StackPanel
+                                                IsVisible="{Binding CanEdit}"
+                                                Orientation="Horizontal"
+                                                Spacing="6">
+                                                <TextBox
+                                                    Width="70"
+                                                    IsVisible="{Binding !IsAudioMode}"
+                                                    PlaceholderText="Start"
+                                                    Text="{Binding ClipStartText}" />
+                                                <TextBox
+                                                    Width="70"
+                                                    IsVisible="{Binding !IsAudioMode}"
+                                                    PlaceholderText="End"
+                                                    Text="{Binding ClipEndText}" />
+                                                <TextBox
+                                                    Width="70"
+                                                    IsVisible="{Binding !IsAudioMode}"
+                                                    PlaceholderText="Cover"
+                                                    Text="{Binding CoverTimeText}" />
+                                                <CheckBox
+                                                    Content="Video only"
+                                                    IsChecked="{Binding VideoOnly}"
+                                                    IsVisible="{Binding !IsAudioMode}" />
+                                                <CheckBox
+                                                    Content="SRT"
+                                                    IsChecked="{Binding SaveSrt}"
+                                                    IsVisible="{Binding !IsAudioMode}" />
+                                            </StackPanel>
+                                            <TextBlock
+                                                Opacity="0.8"
+                                                PointerReleased="StatusTextBlock_OnPointerReleased"
+                                                Text="{Binding ProgressLabel}"
+                                                TextTrimming="CharacterEllipsis"
+                                                ToolTip.Tip="{Binding ErrorMessage}" />
+                                            <TextBlock
+                                                Opacity="0.7"
+                                                IsVisible="{Binding TimeRemainingText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                Text="{Binding TimeRemainingText}" />
+                                        </StackPanel>
+                                        <StackPanel
+                                            Grid.Column="2"
+                                            VerticalAlignment="Center"
+                                            Orientation="Horizontal">
+                                            <ProgressBar
+                                                Width="22"
+                                                Height="22"
+                                                IsIndeterminate="True"
+                                                IsVisible="{Binding IsLoading}"
+                                                Theme="{DynamicResource MaterialCircularProgressBar}" />
+                                            <ToggleSwitch IsChecked="{Binding IsAudioMode}" IsEnabled="{Binding CanEdit}" />
+                                            <ComboBox
+                                                MinWidth="80"
+                                                IsVisible="{Binding ShowSubtitleChoice}"
+                                                ItemsSource="{Binding SubtitleChoices}"
+                                                SelectedItem="{Binding SubtitleChoice}"
+                                                ToolTip.Tip="{Binding LocalizationManager.SubtitlesLabel}" />
+                                            <Button
+                                                Padding="10,6"
+                                                Classes="primary"
+                                                Command="{Binding #UserControl.((components:DashboardViewModel)DataContext).StartDownloadCommand}"
+                                                CommandParameter="{Binding}"
+                                                IsVisible="{Binding CanStart}"
+                                                ToolTip.Tip="{Binding LocalizationManager.DownloadButton}">
+                                                <materialIcons:MaterialIcon Width="22" Height="22" Kind="Download" />
+                                            </Button>
+                                            <Button
+                                                Padding="4"
+                                                Command="{Binding PauseDownloadCommand}"
+                                                IsVisible="{Binding CanPause}"
+                                                Theme="{DynamicResource MaterialFlatButton}"
+                                                ToolTip.Tip="{Binding LocalizationManager.PauseLabel}">
+                                                <materialIcons:MaterialIcon Width="22" Height="22" Kind="Pause" />
+                                            </Button>
+                                            <Button
+                                                Padding="4"
+                                                Command="{Binding ResumeDownloadCommand}"
+                                                IsVisible="{Binding CanResume}"
+                                                Theme="{DynamicResource MaterialFlatButton}"
+                                                ToolTip.Tip="{Binding LocalizationManager.ResumeLabel}">
+                                                <materialIcons:MaterialIcon Width="22" Height="22" Kind="Play" />
+                                            </Button>
+                                            <Button
+                                                Padding="4"
+                                                Command="{Binding #UserControl.((components:DashboardViewModel)DataContext).CopyLinkCommand}"
+                                                CommandParameter="{Binding}"
+                                                IsVisible="{Binding CanCopyLink}"
+                                                Theme="{DynamicResource MaterialFlatButton}"
+                                                ToolTip.Tip="{Binding LocalizationManager.CopyLinkLabel}">
+                                                <materialIcons:MaterialIcon Width="22" Height="22" Kind="ContentCopy" />
+                                            </Button>
+                                            <Button
+                                                Padding="4"
+                                                Command="{Binding #UserControl.((components:DashboardViewModel)DataContext).SaveAudioFromFileCommand}"
+                                                CommandParameter="{Binding}"
+                                                IsVisible="{Binding CanSaveAudio}"
+                                                Theme="{DynamicResource MaterialFlatButton}"
+                                                ToolTip.Tip="{Binding LocalizationManager.SaveAudioLabel}">
+                                                <materialIcons:MaterialIcon Width="22" Height="22" Kind="MusicNote" />
+                                            </Button>
+                                            <Button
+                                                Padding="4"
+                                                Command="{Binding ShowFileCommand}"
+                                                IsVisible="{Binding $self.IsEffectivelyEnabled}"
+                                                Theme="{DynamicResource MaterialFlatButton}"
+                                                ToolTip.Tip="{Binding LocalizationManager.ShowFileTooltip}">
+                                                <materialIcons:MaterialIcon Width="22" Height="22" Kind="FileFindOutline" />
+                                            </Button>
+                                            <Button
+                                                Padding="4"
+                                                Command="{Binding OpenFileCommand}"
+                                                IsVisible="{Binding $self.IsEffectivelyEnabled}"
+                                                Theme="{DynamicResource MaterialFlatButton}"
+                                                ToolTip.Tip="{Binding LocalizationManager.PlayTooltip}">
+                                                <materialIcons:MaterialIcon Width="22" Height="22" Kind="PlayCircleOutline" />
+                                            </Button>
+                                            <Button
+                                                Padding="4"
+                                                Command="{Binding CancelCommand}"
+                                                IsVisible="{Binding $self.IsEffectivelyEnabled}"
+                                                Theme="{DynamicResource MaterialFlatButton}"
+                                                ToolTip.Tip="{Binding LocalizationManager.CancelDownloadTooltip}">
+                                                <materialIcons:MaterialIcon Width="22" Height="22" Kind="StopCircleOutline" />
+                                            </Button>
+                                            <Button
+                                                Padding="4"
+                                                Command="{Binding #UserControl.((components:DashboardViewModel)DataContext).ReloadCardCommand}"
+                                                CommandParameter="{Binding}"
+                                                IsVisible="{Binding CanReload}"
+                                                Theme="{DynamicResource MaterialFlatButton}"
+                                                ToolTip.Tip="{Binding LocalizationManager.RestartDownloadTooltip}">
+                                                <materialIcons:MaterialIcon Width="22" Height="22" Kind="Reload" />
+                                            </Button>
+                                            <Button
+                                                Padding="4"
+                                                Command="{Binding #UserControl.((components:DashboardViewModel)DataContext).DownloadAgainCommand}"
+                                                CommandParameter="{Binding}"
+                                                IsVisible="{Binding CanDownloadAgain}"
+                                                Theme="{DynamicResource MaterialFlatButton}"
+                                                ToolTip.Tip="{Binding LocalizationManager.RestartDownloadTooltip}">
+                                                <materialIcons:MaterialIcon Width="22" Height="22" Kind="Download" />
+                                            </Button>
+                                            <Button
+                                                Padding="4"
+                                                Command="{Binding #UserControl.((components:DashboardViewModel)DataContext).CloseCardCommand}"
+                                                CommandParameter="{Binding}"
+                                                Theme="{DynamicResource MaterialFlatButton}"
+                                                ToolTip.Tip="{Binding LocalizationManager.CancelDownloadTooltip}">
+                                                <materialIcons:MaterialIcon Width="22" Height="22" Kind="Close" />
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+                                    </Grid>
                                 </Grid>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-
-                    <!--  Buttons  -->
-                    <DataGridTemplateColumn MinWidth="100">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                                    <!--  Show file  -->
-                                    <Button
-                                        Padding="4"
-                                        VerticalAlignment="Center"
-                                        Command="{Binding ShowFileCommand}"
-                                        IsVisible="{Binding $self.IsEffectivelyEnabled}"
-                                        Theme="{DynamicResource MaterialFlatButton}"
-                                        ToolTip.Tip="{Binding LocalizationManager.ShowFileTooltip}">
-                                        <materialIcons:MaterialIcon
-                                            Width="24"
-                                            Height="24"
-                                            Kind="FileFindOutline" />
-                                    </Button>
-
-                                    <!--  Open file  -->
-                                    <Button
-                                        Padding="4"
-                                        VerticalAlignment="Center"
-                                        Command="{Binding OpenFileCommand}"
-                                        IsVisible="{Binding $self.IsEffectivelyEnabled}"
-                                        Theme="{DynamicResource MaterialFlatButton}"
-                                        ToolTip.Tip="{Binding LocalizationManager.PlayTooltip}">
-                                        <materialIcons:MaterialIcon
-                                            Width="24"
-                                            Height="24"
-                                            Kind="PlayCircleOutline" />
-                                    </Button>
-
-                                    <!--  Cancel download  -->
-                                    <Button
-                                        Padding="4"
-                                        VerticalAlignment="Center"
-                                        Command="{Binding CancelCommand}"
-                                        IsVisible="{Binding $self.IsEffectivelyEnabled}"
-                                        Theme="{DynamicResource MaterialFlatButton}"
-                                        ToolTip.Tip="{Binding LocalizationManager.CancelDownloadTooltip}">
-                                        <materialIcons:MaterialIcon
-                                            Width="24"
-                                            Height="24"
-                                            Kind="CloseCircleOutline" />
-                                    </Button>
-
-                                    <!--  Restart download  -->
-                                    <Button
-                                        Padding="4"
-                                        VerticalAlignment="Center"
-                                        Command="{Binding $parent[UserControl].((components:DashboardViewModel)DataContext).RestartDownloadCommand}"
-                                        CommandParameter="{Binding}"
-                                        IsVisible="{Binding IsCanceledOrFailed}"
-                                        Theme="{DynamicResource MaterialFlatButton}"
-                                        ToolTip.Tip="{Binding LocalizationManager.RestartDownloadTooltip}">
-                                        <materialIcons:MaterialIcon
-                                            Width="24"
-                                            Height="24"
-                                            Kind="Restart" />
-                                    </Button>
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+            </DockPanel>
         </Panel>
     </DockPanel>
 </UserControl>

@@ -68,51 +68,88 @@
         </Border>
 
         <!--  Download options  -->
-        <ComboBox
-            Grid.Row="2"
-            Margin="16"
-            materialAssists:ComboBoxAssist.Label="{Binding LocalizationManager.FormatLabel}"
-            DockPanel.Dock="Left"
-            ItemsSource="{Binding AvailableDownloadOptions}"
-            SelectedItem="{Binding SelectedDownloadOption}"
-            Theme="{DynamicResource MaterialFilledComboBox}">
-            <ComboBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Spacing="2">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <!--  Video quality / audio-only label  -->
-                            <TextBlock Classes.audioOnly="{Binding IsAudioOnly}" FontWeight="SemiBold">
-                                <TextBlock.Styles>
-                                    <Style Selector="TextBlock">
-                                        <Setter Property="Text" Value="{Binding VideoQuality, Mode=OneWay}" />
+        <StackPanel Grid.Row="2" Margin="16,8,16,16" Spacing="8">
+            <StackPanel
+                HorizontalAlignment="Center"
+                Orientation="Horizontal"
+                Spacing="8">
+                <materialIcons:MaterialIcon
+                    Width="20"
+                    Height="20"
+                    VerticalAlignment="Center"
+                    Kind="VideoOutline" />
+                <TextBlock VerticalAlignment="Center" Text="{Binding LocalizationManager.VideoLabel}" />
+                <ToggleSwitch IsChecked="{Binding IsAudioMode}" />
+                <materialIcons:MaterialIcon
+                    Width="20"
+                    Height="20"
+                    VerticalAlignment="Center"
+                    Kind="MusicNote" />
+                <TextBlock VerticalAlignment="Center" Text="{Binding LocalizationManager.AudioLabel}" />
+            </StackPanel>
 
-                                        <Style Selector="^.audioOnly">
-                                            <Setter Property="Text" Value="{Binding #UserControl.DataContext.LocalizationManager.AudioLabel}" />
+            <ComboBox
+                materialAssists:ComboBoxAssist.Label="{Binding LocalizationManager.FormatLabel}"
+                ItemsSource="{Binding VisibleDownloadOptions}"
+                SelectedItem="{Binding SelectedDownloadOption}"
+                Theme="{DynamicResource MaterialFilledComboBox}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Spacing="2">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <!--  Video quality / audio-only label  -->
+                                <TextBlock Classes.audioOnly="{Binding IsAudioOnly}" FontWeight="SemiBold">
+                                    <TextBlock.Styles>
+                                        <Style Selector="TextBlock">
+                                            <Setter Property="Text" Value="{Binding VideoQuality, Mode=OneWay}" />
+
+                                            <Style Selector="^.audioOnly">
+                                                <Setter Property="Text" Value="{Binding #UserControl.DataContext.LocalizationManager.AudioLabel}" />
+                                            </Style>
                                         </Style>
-                                    </Style>
-                                </TextBlock.Styles>
-                            </TextBlock>
+                                    </TextBlock.Styles>
+                                </TextBlock>
 
-                            <!--  Upscaled badge  -->
-                            <Border
-                                Padding="6,1"
-                                BorderBrush="{DynamicResource MaterialDividerBrush}"
-                                BorderThickness="1"
-                                CornerRadius="8"
-                                IsVisible="{Binding IsVideoUpscaled}">
+                                <!--  Upscaled badge  -->
+                                <Border
+                                    Padding="6,1"
+                                    BorderBrush="{DynamicResource MaterialDividerBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    IsVisible="{Binding IsVideoUpscaled}">
+                                    <TextBlock
+                                        FontSize="11"
+                                        FontWeight="Medium"
+                                        Text="{Binding #UserControl.DataContext.LocalizationManager.UpscaledLabel}" />
+                                </Border>
+                            </StackPanel>
+
+                            <!--  Container and source bitrate  -->
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <TextBlock FontWeight="Light" Text="{Binding Container, Mode=OneWay}" />
                                 <TextBlock
-                                    FontSize="11"
-                                    FontWeight="Medium"
-                                    Text="{Binding #UserControl.DataContext.LocalizationManager.UpscaledLabel}" />
-                            </Border>
+                                    FontWeight="Light"
+                                    IsVisible="{Binding IsAudioOnly}"
+                                    Text="{Binding AudioBitrateLabel, Mode=OneWay}" />
+                            </StackPanel>
                         </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
 
-                        <!--  Container  -->
-                        <TextBlock FontWeight="Light" Text="{Binding Container, Mode=OneWay}" />
-                    </StackPanel>
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
+            <ComboBox
+                materialAssists:ComboBoxAssist.Label="{Binding LocalizationManager.AudioBitrateLabel}"
+                IsVisible="{Binding IsAudioMode}"
+                ItemsSource="{Binding AvailableAudioBitratePreferences}"
+                SelectedItem="{Binding SelectedAudioBitratePreference}"
+                Theme="{DynamicResource MaterialFilledComboBox}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Converter={x:Static converters:AudioBitratePreferenceToStringConverter.Instance}}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </StackPanel>
 
         <!--  Buttons  -->
         <UniformGrid

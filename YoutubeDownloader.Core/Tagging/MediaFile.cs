@@ -17,6 +17,8 @@ internal partial class MediaFile(TagFile file) : IDisposable
 
     public void SetAlbum(string album) => file.Tag.Album = album;
 
+    public void SetYear(uint year) => file.Tag.Year = year;
+
     public void SetDescription(string description) => file.Tag.Description = description;
 
     public void SetComment(string comment) => file.Tag.Comment = comment;

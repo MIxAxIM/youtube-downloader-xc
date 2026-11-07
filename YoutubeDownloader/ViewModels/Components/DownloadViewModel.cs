@@ -39,7 +39,11 @@ public partial class DownloadViewModel : ViewModelBase
 
         _eventSubscription = Progress.WatchProperty(
             o => o.Current,
-            _ => OnPropertyChanged(nameof(IsProgressIndeterminate))
+            _ =>
+            {
+                OnPropertyChanged(nameof(IsProgressIndeterminate));
+                UpdateProgressSnapshot();
+            }
         );
     }
 
@@ -55,6 +59,10 @@ public partial class DownloadViewModel : ViewModelBase
     public partial VideoDownloadPreference? DownloadPreference { get; set; }
 
     [ObservableProperty]
+    public partial AudioBitratePreference AudioBitrate { get; set; } =
+        AudioBitratePreference.Source;
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(FileName))]
     public partial string? FilePath { get; set; }
 
@@ -63,7 +71,7 @@ public partial class DownloadViewModel : ViewModelBase
     [NotifyCanExecuteChangedFor(nameof(CancelCommand))]
     [NotifyCanExecuteChangedFor(nameof(ShowFileCommand))]
     [NotifyCanExecuteChangedFor(nameof(OpenFileCommand))]
-    public partial DownloadStatus Status { get; set; } = DownloadStatus.Enqueued;
+    public partial DownloadStatus Status { get; set; } = DownloadStatus.Ready;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CopyErrorMessageCommand))]
@@ -125,6 +133,7 @@ public partial class DownloadViewModel : ViewModelBase
         try
         {
             Process.StartShellExecute(FilePath);
+            Played = true;
         }
         catch (Exception ex)
         {

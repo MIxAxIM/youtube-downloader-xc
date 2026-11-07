@@ -5,15 +5,20 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using DialogHostAvalonia;
 using YoutubeDownloader.Utils.Extensions;
+using YoutubeDownloader.ViewModels.Dialogs;
+using YoutubeDownloader.Views.Dialogs;
 
 namespace YoutubeDownloader.Framework;
 
 public class DialogManager : IDisposable
 {
     private readonly SemaphoreSlim _dialogLock = new(1, 1);
+    private SettingsWindow? _settingsWindow;
 
     public async Task<T?> ShowDialogAsync<T>(DialogViewModelBase<T> dialog)
     {
@@ -49,6 +54,45 @@ public class DialogManager : IDisposable
         {
             _dialogLock.Release();
         }
+    }
+
+    public async Task<bool?> ShowSettingsWindowAsync(SettingsViewModel viewModel)
+    {
+        if (_settingsWindow is not null)
+        {
+            _settingsWindow.Activate();
+            return _settingsWindow.DataContext.DialogResult;
+        }
+
+        var owner =
+            (
+                Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime
+            )?.MainWindow
+            ?? throw new ApplicationException("Could not find the main window.");
+
+        var window = new SettingsWindow { DataContext = viewModel };
+        _settingsWindow = window;
+
+        window.Closed += (_, _) =>
+        {
+            if (ReferenceEquals(_settingsWindow, window))
+                _settingsWindow = null;
+        };
+
+        // Close the window when OK / Cancel finish the dialog view-model.
+        _ = viewModel
+            .WaitForCloseAsync()
+            .ContinueWith(
+                _ =>
+                {
+                    if (window.IsVisible)
+                        Avalonia.Threading.Dispatcher.UIThread.Post(window.Close);
+                },
+                TaskScheduler.Default
+            );
+
+        await window.ShowDialog(owner);
+        return viewModel.DialogResult;
     }
 
     public async Task<string?> PromptOpenFilePathAsync(

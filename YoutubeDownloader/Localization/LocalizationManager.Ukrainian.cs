@@ -72,6 +72,14 @@ public partial class LocalizationManager
                 """,
             [nameof(ParallelLimitLabel)] = "Ліміт паралелізації",
             [nameof(ParallelLimitTooltip)] = "Скільки завантажень може бути активними одночасно",
+            [nameof(UseProxyLabel)] = "Використовувати проксі",
+            [nameof(UseProxyTooltip)] =
+                "Надсилати запити YouTube, завантаження, теги та оновлення через цей проксі, поки його увімкнено.",
+            [nameof(ProxyProtocolLabel)] = "Протокол",
+            [nameof(ProxyHostLabel)] = "Хост",
+            [nameof(ProxyPortLabel)] = "Порт",
+            [nameof(ProxyUsernameLabel)] = "Ім'я користувача",
+            [nameof(ProxyPasswordLabel)] = "Пароль",
             [nameof(FFmpegPathLabel)] = "Шлях FFmpeg",
             [nameof(FFmpegPathTooltip)] =
                 "Шлях до виконуваного файлу FFmpeg. Залиште порожнім для автоматичного визначення.",
@@ -96,6 +104,34 @@ public partial class LocalizationManager
             [nameof(AudioLabel)] = "Аудіо",
             [nameof(UpscaledLabel)] = "Збільшене",
             [nameof(FormatLabel)] = "Формат",
+            [nameof(VideoLabel)] = "Відео",
+            [nameof(AudioBitrateLabel)] = "Бітрейт аудіо",
+            [nameof(PasteButton)] = "Вставити посилання",
+            [nameof(PasteTooltip)] = "Вставити посилання з буфера і додати його до черги",
+            [nameof(DownloadAllButton)] = "Завантажити все",
+            [nameof(WaitingLabel)] = "Очікування...",
+            [nameof(DownloadedProgress)] = "Завантажено {0} з {1}",
+            [nameof(UnsupportedBitrateTooltip)] =
+                "YouTube не надав цей бітрейт. Програма все одно може закодувати файл із цією швидкістю.",
+            [nameof(GenreLabel)] = "Жанр",
+            [nameof(DateLabel)] = "Дата",
+            [nameof(SpeedLimitLabel)] = "Обмеження швидкості",
+            [nameof(UnlimitedLabel)] = "Без обмежень",
+            [nameof(HistoryTooltip)] = "Історія",
+            [nameof(HistoryTitle)] = "Історія",
+            [nameof(ClearHistoryButton)] = "ОЧИСТИТИ",
+            [nameof(HelpTooltip)] = "Довідка",
+            [nameof(HelpTitle)] = "Довідка",
+            [nameof(HelpMessage)] = """
+                Вставте посилання, щоб додати відео до черги. Завантаження почнеться лише після натискання кнопки.
+
+                Верхня панель задає формат і бітрейт для карток, які ще не почалися. Кожна картка може змінити якість, а аудіокартка — бітрейт.
+
+                Приглушений бітрейт із позначкою не наданий YouTube. Програма все одно може його закодувати.
+
+                Картка заповнюється зліва під час завантаження.
+                """,
+            [nameof(ClipboardEmptyMessage)] = "Буфер обміну не містить посилання",
             // Download Multiple Setup
             [nameof(ContainerLabel)] = "Контейнер",
             [nameof(VideoQualityLabel)] = "Якість відео",

@@ -109,33 +109,68 @@
         </Border>
 
         <!--  Preferences  -->
-        <UniformGrid
-            Grid.Row="2"
-            Margin="8"
-            Columns="2">
-            <!--  Container preference  -->
-            <ComboBox
-                Margin="8"
-                materialAssists:ComboBoxAssist.Label="{Binding LocalizationManager.ContainerLabel}"
-                ItemsSource="{Binding AvailableContainers}"
-                SelectedItem="{Binding SelectedContainer}"
-                Theme="{DynamicResource MaterialFilledComboBox}" />
+        <StackPanel Grid.Row="2" Margin="8" Spacing="8">
+            <StackPanel
+                HorizontalAlignment="Center"
+                Orientation="Horizontal"
+                Spacing="8">
+                <materialIcons:MaterialIcon
+                    Width="20"
+                    Height="20"
+                    VerticalAlignment="Center"
+                    Kind="VideoOutline" />
+                <TextBlock VerticalAlignment="Center" Text="{Binding LocalizationManager.VideoLabel}" />
+                <ToggleSwitch IsChecked="{Binding IsAudioMode}" />
+                <materialIcons:MaterialIcon
+                    Width="20"
+                    Height="20"
+                    VerticalAlignment="Center"
+                    Kind="MusicNote" />
+                <TextBlock VerticalAlignment="Center" Text="{Binding LocalizationManager.AudioLabel}" />
+            </StackPanel>
 
-            <!--  Video quality preference  -->
-            <ComboBox
-                Margin="8"
-                materialAssists:ComboBoxAssist.Label="{Binding LocalizationManager.VideoQualityLabel}"
-                IsEnabled="{Binding !SelectedContainer.IsAudioOnly}"
-                ItemsSource="{Binding AvailableVideoQualityPreferences}"
-                SelectedItem="{Binding SelectedVideoQualityPreference}"
-                Theme="{DynamicResource MaterialFilledComboBox}">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Converter={x:Static converters:VideoQualityPreferenceToStringConverter.Instance}}" />
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
-        </UniformGrid>
+            <UniformGrid Columns="2">
+                <!--  Container preference  -->
+                <ComboBox
+                    Margin="8"
+                    materialAssists:ComboBoxAssist.Label="{Binding LocalizationManager.ContainerLabel}"
+                    ItemsSource="{Binding VisibleContainers}"
+                    SelectedItem="{Binding SelectedContainer}"
+                    Theme="{DynamicResource MaterialFilledComboBox}" />
+
+                <Panel>
+                    <!--  Video quality preference  -->
+                    <ComboBox
+                        Margin="8"
+                        materialAssists:ComboBoxAssist.Label="{Binding LocalizationManager.VideoQualityLabel}"
+                        IsVisible="{Binding !IsAudioMode}"
+                        ItemsSource="{Binding AvailableVideoQualityPreferences}"
+                        SelectedItem="{Binding SelectedVideoQualityPreference}"
+                        Theme="{DynamicResource MaterialFilledComboBox}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={x:Static converters:VideoQualityPreferenceToStringConverter.Instance}}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <!--  Audio bitrate preference  -->
+                    <ComboBox
+                        Margin="8"
+                        materialAssists:ComboBoxAssist.Label="{Binding LocalizationManager.AudioBitrateLabel}"
+                        IsVisible="{Binding IsAudioMode}"
+                        ItemsSource="{Binding AvailableAudioBitratePreferences}"
+                        SelectedItem="{Binding SelectedAudioBitratePreference}"
+                        Theme="{DynamicResource MaterialFilledComboBox}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={x:Static converters:AudioBitratePreferenceToStringConverter.Instance}}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </Panel>
+            </UniformGrid>
+        </StackPanel>
 
         <!--  Buttons  -->
         <UniformGrid

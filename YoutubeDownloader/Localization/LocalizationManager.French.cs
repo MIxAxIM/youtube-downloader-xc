@@ -76,6 +76,14 @@ public partial class LocalizationManager
         [nameof(ParallelLimitLabel)] = "Limite parallèle",
         [nameof(ParallelLimitTooltip)] =
             "Combien de téléchargements peuvent être actifs en même temps",
+        [nameof(UseProxyLabel)] = "Utiliser un proxy",
+        [nameof(UseProxyTooltip)] =
+            "Envoyer les requêtes YouTube, les téléchargements, les tags et les mises à jour via ce proxy tant qu'il est activé.",
+        [nameof(ProxyProtocolLabel)] = "Protocole",
+        [nameof(ProxyHostLabel)] = "Hôte",
+        [nameof(ProxyPortLabel)] = "Port",
+        [nameof(ProxyUsernameLabel)] = "Nom d'utilisateur",
+        [nameof(ProxyPasswordLabel)] = "Mot de passe",
         [nameof(FFmpegPathLabel)] = "Chemin FFmpeg",
         [nameof(FFmpegPathTooltip)] =
             "Chemin vers l'exécutable FFmpeg. Laisser vide pour la détection automatique.",
@@ -100,6 +108,34 @@ public partial class LocalizationManager
         [nameof(AudioLabel)] = "Audio",
         [nameof(UpscaledLabel)] = "Suréchantillonné",
         [nameof(FormatLabel)] = "Format",
+        [nameof(VideoLabel)] = "Vidéo",
+        [nameof(AudioBitrateLabel)] = "Débit audio",
+        [nameof(PasteButton)] = "Coller le lien",
+        [nameof(PasteTooltip)] = "Coller un lien du presse-papiers et l'ajouter à la file",
+        [nameof(DownloadAllButton)] = "Tout télécharger",
+        [nameof(WaitingLabel)] = "En attente...",
+        [nameof(DownloadedProgress)] = "Téléchargé {0} sur {1}",
+        [nameof(UnsupportedBitrateTooltip)] =
+            "YouTube n'a pas fourni ce débit. L'application peut quand même encoder le fichier à ce débit.",
+        [nameof(GenreLabel)] = "Genre",
+        [nameof(DateLabel)] = "Date",
+        [nameof(SpeedLimitLabel)] = "Limite de vitesse",
+        [nameof(UnlimitedLabel)] = "Illimitée",
+        [nameof(HistoryTooltip)] = "Historique",
+        [nameof(HistoryTitle)] = "Historique",
+        [nameof(ClearHistoryButton)] = "EFFACER",
+        [nameof(HelpTooltip)] = "Aide",
+        [nameof(HelpTitle)] = "Aide",
+        [nameof(HelpMessage)] = """
+            Collez un lien pour ajouter des vidéos à la file. Rien ne se télécharge tant que vous n'appuyez pas sur un bouton de téléchargement.
+
+            La barre du haut définit le format et le débit des cartes qui n'ont pas commencé. Chaque carte peut changer sa qualité, et les cartes audio leur débit.
+
+            Un débit atténué avec une icône d'information n'a pas été fourni par YouTube. L'application peut quand même l'encoder.
+
+            La carte se remplit de gauche à droite pendant le téléchargement.
+            """,
+        [nameof(ClipboardEmptyMessage)] = "Le presse-papiers ne contient pas de lien",
         // Download Multiple Setup
         [nameof(ContainerLabel)] = "Conteneur",
         [nameof(VideoQualityLabel)] = "Qualité vidéo",

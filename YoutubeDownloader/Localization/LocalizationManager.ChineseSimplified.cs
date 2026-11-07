@@ -71,6 +71,13 @@ public partial class LocalizationManager
                 """,
             [nameof(ParallelLimitLabel)] = "并行下载限制",
             [nameof(ParallelLimitTooltip)] = "允许同时进行的下载任务数量",
+            [nameof(UseProxyLabel)] = "使用代理",
+            [nameof(UseProxyTooltip)] = "启用后，通过此代理发送 YouTube 请求、下载、标签和更新。",
+            [nameof(ProxyProtocolLabel)] = "协议",
+            [nameof(ProxyHostLabel)] = "主机",
+            [nameof(ProxyPortLabel)] = "端口",
+            [nameof(ProxyUsernameLabel)] = "用户名",
+            [nameof(ProxyPasswordLabel)] = "密码",
             [nameof(FFmpegPathLabel)] = "FFmpeg 路径",
             [nameof(FFmpegPathTooltip)] = "FFmpeg 可执行文件的路径。留空则使用自动检测。",
             [nameof(FFmpegPathPlaceholderText)] = "自动检测",
@@ -94,6 +101,34 @@ public partial class LocalizationManager
             [nameof(AudioLabel)] = "音频",
             [nameof(UpscaledLabel)] = "超分辨率",
             [nameof(FormatLabel)] = "格式",
+            [nameof(VideoLabel)] = "视频",
+            [nameof(AudioBitrateLabel)] = "音频比特率",
+            [nameof(PasteButton)] = "粘贴链接",
+            [nameof(PasteTooltip)] = "从剪贴板粘贴链接并加入队列",
+            [nameof(DownloadAllButton)] = "全部下载",
+            [nameof(WaitingLabel)] = "等待中...",
+            [nameof(DownloadedProgress)] = "已下载 {0} / {1}",
+            [nameof(UnsupportedBitrateTooltip)] =
+                "YouTube 未提供此比特率。应用仍可以按该比特率编码文件。",
+            [nameof(GenreLabel)] = "流派",
+            [nameof(DateLabel)] = "日期",
+            [nameof(SpeedLimitLabel)] = "速度限制",
+            [nameof(UnlimitedLabel)] = "无限制",
+            [nameof(HistoryTooltip)] = "下载历史",
+            [nameof(HistoryTitle)] = "历史",
+            [nameof(ClearHistoryButton)] = "清除",
+            [nameof(HelpTooltip)] = "帮助",
+            [nameof(HelpTitle)] = "帮助",
+            [nameof(HelpMessage)] = """
+                粘贴链接即可把视频加入队列。按下下载按钮后才会开始下载。
+
+                顶栏为尚未开始的卡片设置格式和比特率。每张卡片可以改画质，音频卡片还可以改比特率。
+
+                颜色较淡并带有信息图标的比特率不是 YouTube 提供的。应用仍可以编码它。
+
+                下载时卡片会从左向右填充。
+                """,
+            [nameof(ClipboardEmptyMessage)] = "剪贴板里没有链接",
             // Download Multiple Setup
             [nameof(ContainerLabel)] = "封装格式",
             [nameof(VideoQualityLabel)] = "视频质量",

@@ -21,10 +21,14 @@ public class ViewModelManager(IServiceProvider services, LocalizationManager loc
     public AuthSetupViewModel GetAuthSetupViewModel() =>
         services.GetRequiredService<AuthSetupViewModel>();
 
+    public DownloadViewModel GetDownloadViewModel() =>
+        services.GetRequiredService<DownloadViewModel>();
+
     public DownloadViewModel GetDownloadViewModel(
         IVideo video,
         VideoDownloadOption downloadOption,
-        string filePath
+        string filePath,
+        AudioBitratePreference audioBitrate = AudioBitratePreference.Source
     )
     {
         var viewModel = services.GetRequiredService<DownloadViewModel>();
@@ -32,6 +36,7 @@ public class ViewModelManager(IServiceProvider services, LocalizationManager loc
         viewModel.Video = video;
         viewModel.DownloadOption = downloadOption;
         viewModel.FilePath = filePath;
+        viewModel.AudioBitrate = audioBitrate;
 
         return viewModel;
     }
@@ -103,4 +108,7 @@ public class ViewModelManager(IServiceProvider services, LocalizationManager loc
 
     public SettingsViewModel GetSettingsViewModel() =>
         services.GetRequiredService<SettingsViewModel>();
+
+    public HistoryViewModel GetHistoryViewModel() =>
+        services.GetRequiredService<HistoryViewModel>();
 }

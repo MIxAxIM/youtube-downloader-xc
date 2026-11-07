@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -36,14 +37,59 @@ public partial class DownloadSingleSetupViewModel(
     [ObservableProperty]
     public partial VideoDownloadOption? SelectedDownloadOption { get; set; }
 
+    [ObservableProperty]
+    public partial bool IsAudioMode { get; set; }
+
+    [ObservableProperty]
+    public partial AudioBitratePreference SelectedAudioBitratePreference { get; set; } =
+        AudioBitratePreference.Source;
+
+    public IReadOnlyList<AudioBitratePreference> AvailableAudioBitratePreferences { get; } =
+        Enum.GetValues<AudioBitratePreference>();
+
+    public IReadOnlyList<VideoDownloadOption> VisibleDownloadOptions =>
+        (AvailableDownloadOptions ?? [])
+            .Where(option => option.IsAudioOnly == IsAudioMode)
+            .ToArray();
+
     public override Task InitializeAsync()
     {
-        SelectedDownloadOption = AvailableDownloadOptions?.FirstOrDefault(o =>
-            o.Container == settingsService.LastContainer
-        );
+        SelectedAudioBitratePreference = settingsService.LastAudioBitratePreference;
+        IsAudioMode = settingsService.LastDownloadMediaKind == DownloadMediaKind.Audio;
+        SelectMatchingOption();
 
         return Task.CompletedTask;
     }
+
+    partial void OnAvailableDownloadOptionsChanged(IReadOnlyList<VideoDownloadOption>? value) =>
+        OnPropertyChanged(nameof(VisibleDownloadOptions));
+
+    private VideoDownloadOption? _videoSelection;
+    private VideoDownloadOption? _audioSelection;
+
+    partial void OnIsAudioModeChanged(bool value)
+    {
+        OnPropertyChanged(nameof(VisibleDownloadOptions));
+        SelectedDownloadOption =
+            (value ? _audioSelection : _videoSelection)
+            ?? VisibleDownloadOptions.FirstOrDefault(option =>
+                option.Container == settingsService.LastContainer
+            )
+            ?? VisibleDownloadOptions.FirstOrDefault();
+    }
+
+    partial void OnSelectedDownloadOptionChanged(VideoDownloadOption? value)
+    {
+        if (value is null)
+            return;
+
+        if (value.IsAudioOnly)
+            _audioSelection = value;
+        else
+            _videoSelection = value;
+    }
+
+    private void SelectMatchingOption() => OnIsAudioModeChanged(IsAudioMode);
 
     [RelayCommand]
     private async Task CopyTitleAsync()
@@ -78,7 +124,18 @@ public partial class DownloadSingleSetupViewModel(
         await File.WriteAllBytesAsync(filePath, []);
 
         settingsService.LastContainer = container;
+        settingsService.LastDownloadMediaKind = SelectedDownloadOption.IsAudioOnly
+            ? DownloadMediaKind.Audio
+            : DownloadMediaKind.Video;
+        settingsService.LastAudioBitratePreference = SelectedAudioBitratePreference;
 
-        Close(viewModelManager.GetDownloadViewModel(Video, SelectedDownloadOption, filePath));
+        Close(
+            viewModelManager.GetDownloadViewModel(
+                Video,
+                SelectedDownloadOption,
+                filePath,
+                SelectedAudioBitratePreference
+            )
+        );
     }
 }

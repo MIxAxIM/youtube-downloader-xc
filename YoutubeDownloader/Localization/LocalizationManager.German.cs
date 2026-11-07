@@ -75,6 +75,14 @@ public partial class LocalizationManager
             """,
         [nameof(ParallelLimitLabel)] = "Paralleles Limit",
         [nameof(ParallelLimitTooltip)] = "Wie viele Downloads gleichzeitig aktiv sein können",
+        [nameof(UseProxyLabel)] = "Proxy verwenden",
+        [nameof(UseProxyTooltip)] =
+            "YouTube-Anfragen, Downloads, Tags und Updates über diesen Proxy senden, solange er aktiviert ist.",
+        [nameof(ProxyProtocolLabel)] = "Protokoll",
+        [nameof(ProxyHostLabel)] = "Host",
+        [nameof(ProxyPortLabel)] = "Port",
+        [nameof(ProxyUsernameLabel)] = "Benutzername",
+        [nameof(ProxyPasswordLabel)] = "Passwort",
         [nameof(FFmpegPathLabel)] = "FFmpeg-Pfad",
         [nameof(FFmpegPathTooltip)] =
             "Pfad zur FFmpeg-Programmdatei. Leer lassen für automatische Erkennung.",
@@ -99,6 +107,35 @@ public partial class LocalizationManager
         [nameof(AudioLabel)] = "Audio",
         [nameof(UpscaledLabel)] = "Hochskaliert",
         [nameof(FormatLabel)] = "Format",
+        [nameof(VideoLabel)] = "Video",
+        [nameof(AudioBitrateLabel)] = "Audio-Bitrate",
+        [nameof(PasteButton)] = "Link einfügen",
+        [nameof(PasteTooltip)] =
+            "Link aus der Zwischenablage einfügen und zur Warteschlange hinzufügen",
+        [nameof(DownloadAllButton)] = "Alle herunterladen",
+        [nameof(WaitingLabel)] = "Warten...",
+        [nameof(DownloadedProgress)] = "{0} von {1} heruntergeladen",
+        [nameof(UnsupportedBitrateTooltip)] =
+            "YouTube hat diese Bitrate nicht bereitgestellt. Die App kann die Datei trotzdem mit dieser Rate kodieren.",
+        [nameof(GenreLabel)] = "Genre",
+        [nameof(DateLabel)] = "Datum",
+        [nameof(SpeedLimitLabel)] = "Tempolimit",
+        [nameof(UnlimitedLabel)] = "Unbegrenzt",
+        [nameof(HistoryTooltip)] = "Download-Verlauf",
+        [nameof(HistoryTitle)] = "Verlauf",
+        [nameof(ClearHistoryButton)] = "LÖSCHEN",
+        [nameof(HelpTooltip)] = "Hilfe",
+        [nameof(HelpTitle)] = "Hilfe",
+        [nameof(HelpMessage)] = """
+            Fügen Sie einen Link ein, um Videos zur Warteschlange hinzuzufügen. Der Download startet erst mit einer Download-Schaltfläche.
+
+            Die obere Leiste setzt Format und Bitrate für Karten, die noch nicht gestartet sind. Jede Karte kann die Qualität ändern, Audiokarten auch die Bitrate.
+
+            Eine gedämpfte Bitrate mit Infosymbol wurde von YouTube nicht bereitgestellt. Die App kann sie trotzdem kodieren.
+
+            Die Karte füllt sich beim Download von links.
+            """,
+        [nameof(ClipboardEmptyMessage)] = "Die Zwischenablage enthält keinen Link",
         // Download Multiple Setup
         [nameof(ContainerLabel)] = "Container",
         [nameof(VideoQualityLabel)] = "Videoqualität",
