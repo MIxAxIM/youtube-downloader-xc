@@ -93,7 +93,7 @@ jobs:
 
       - name: Rename macOS bundle
         if: ${{ startsWith(matrix.rid, 'osx-') }}
-        run: mv artifacts/publish/YoutubeDownloaderXC.app artifacts/publish/YoutubeDownloader.XC.app
+        run: mv artifacts/publish/YoutubeDLXC.app artifacts/publish/YoutubeDownloader.XC.app
 
       - name: Upload app binaries
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

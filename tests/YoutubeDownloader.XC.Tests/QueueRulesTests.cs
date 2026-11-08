@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Xunit;
 using YoutubeDownloader.XC.Core.Downloading;
 using YoutubeDownloader.XC.Core.Utils;
 using YoutubeExplode.Videos.Streams;
-using Xunit;
 
 namespace YoutubeDownloader.XC.Tests;
 
@@ -25,11 +25,15 @@ public class QueueRulesTests
         Assert.False(choices.Single(choice => choice.KilobitsPerSecond == 320).IsNative);
         Assert.Equal(
             AudioBitratePreference.Source,
-            BitrateChoiceList.ToPreference(choices.Single(choice => choice.KilobitsPerSecond == 128))
+            BitrateChoiceList.ToPreference(
+                choices.Single(choice => choice.KilobitsPerSecond == 128)
+            )
         );
         Assert.Equal(
             AudioBitratePreference.Kbps320,
-            BitrateChoiceList.ToPreference(choices.Single(choice => choice.KilobitsPerSecond == 320))
+            BitrateChoiceList.ToPreference(
+                choices.Single(choice => choice.KilobitsPerSecond == 320)
+            )
         );
     }
 
@@ -101,7 +105,11 @@ public class QueueRulesTests
         {
             history = DownloadHistoryList.Append(
                 history,
-                new DownloadHistoryEntry($"Video {i}", $@"C:\video{i}.mp4", DateTimeOffset.UnixEpoch)
+                new DownloadHistoryEntry(
+                    $"Video {i}",
+                    $@"C:\video{i}.mp4",
+                    DateTimeOffset.UnixEpoch
+                )
             );
         }
 

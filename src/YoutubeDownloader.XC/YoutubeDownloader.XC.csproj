@@ -14,7 +14,7 @@
 
   <PropertyGroup>
     <MacOSBundleIdentifier>app.youtubedownloader.xc</MacOSBundleIdentifier>
-    <MacOSBundleName>YoutubeDownloaderXC</MacOSBundleName>
+    <MacOSBundleName>YoutubeDLXC</MacOSBundleName>
     <MacOSBundleDisplayName>Youtube Downloader XC</MacOSBundleDisplayName>
   </PropertyGroup>
 
