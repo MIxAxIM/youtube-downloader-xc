@@ -22,6 +22,8 @@ using YoutubeDownloader.XC.Localization;
 using YoutubeDownloader.XC.Services;
 using YoutubeDownloader.XC.Utils.Extensions;
 using YoutubeExplode.Exceptions;
+using YoutubeExplode.Playlists;
+using YoutubeExplode.Videos;
 using YoutubeExplode.Videos.Streams;
 
 namespace YoutubeDownloader.XC.ViewModels.Components;
@@ -660,7 +662,11 @@ public partial class DashboardViewModel : ViewModelBase
         return card;
     }
 
-    private void AddReadyCard(YoutubeExplode.Videos.IVideo video, string? playlistTitle = null)
+    private void AddReadyCard(
+        YoutubeExplode.Videos.IVideo video,
+        string? playlistTitle = null,
+        bool notifyDuplicate = true
+    )
     {
         if (
             QueuePolicy.IsDuplicate(
@@ -669,7 +675,8 @@ public partial class DashboardViewModel : ViewModelBase
             )
         )
         {
-            _snackbarManager.Notify(video.Title);
+            if (notifyDuplicate)
+                _snackbarManager.Notify(video.Title);
             return;
         }
 
@@ -853,7 +860,8 @@ public partial class DashboardViewModel : ViewModelBase
             card.ClipEndText,
             card.CoverTimeText,
             card.VideoOnly,
-            card.SaveSrt
+            card.SaveSrt,
+            card.PlaylistId
         ));
         _settingsService.PersistedQueueJson = QueueSnapshot.Serialize(snapshots);
     }
@@ -869,6 +877,7 @@ public partial class DashboardViewModel : ViewModelBase
             card.EditedYear = snapshot.Year ?? "";
             card.EditedAlbum = snapshot.Album ?? "";
             card.PlaylistTitle = snapshot.PlaylistTitle;
+            card.PlaylistId = snapshot.PlaylistId;
             card.IsAudioMode = snapshot.IsAudio;
             card.SubtitleChoice = snapshot.SubtitleChoice;
             card.ClipStartText = snapshot.ClipStart;
@@ -973,6 +982,43 @@ public partial class DashboardViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private async Task ImportPlaylistAsync(DownloadViewModel? card)
+    {
+        if (card is null || string.IsNullOrWhiteSpace(card.PlaylistId) || card.IsImportingPlaylist)
+            return;
+
+        card.IsImportingPlaylist = true;
+        try
+        {
+            using var resolver = new QueryResolver(_settingsService.LastAuthCookies);
+            var result = await resolver.ResolveAsync(
+                $"https://www.youtube.com/playlist?list={card.PlaylistId}",
+                expandPlaylist: true,
+                card.CancellationToken
+            );
+            if (result.Videos.Count == 0)
+                throw new InvalidOperationException(LocalizationManager.NothingFoundMessage);
+
+            var playlistTitle = result.Kind == QueryResultKind.Playlist ? result.Title : null;
+            foreach (var video in result.Videos)
+                AddReadyCard(video, playlistTitle, notifyDuplicate: false);
+
+            card.PlaylistId = null;
+            PersistQueue();
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            _snackbarManager.Notify(
+                ex is YoutubeExplodeException ? ex.Message : LocalizationManager.NothingFoundMessage
+            );
+        }
+        finally
+        {
+            card.IsImportingPlaylist = false;
+        }
+    }
+
+    [RelayCommand]
     private async Task SaveAudioFromFileAsync(DownloadViewModel? card)
     {
         if (card?.FilePath is null || !File.Exists(card.FilePath))
@@ -1009,16 +1055,21 @@ public partial class DashboardViewModel : ViewModelBase
         {
             using var access = await _lookupSemaphore.AcquireAsync(card.CancellationToken);
             using var resolver = new QueryResolver(_settingsService.LastAuthCookies);
-            var result = await resolver.ResolveAsync(
-                card.SourceQuery!,
-                _settingsService.AutoExpandPlaylist
-            );
+            var source = card.SourceQuery!;
+            // A video copied from a playlist includes both ids. Keep that one video
+            // and let the card import the rest when the playlist icon is clicked.
+            var attachedPlaylist = VideoId.TryParse(source) is not null
+                ? PlaylistId.TryParse(source)
+                : null;
+            var result = await resolver.ResolveAsync(source, attachedPlaylist is null);
             if (result.Videos.Count == 0)
                 throw new InvalidOperationException(LocalizationManager.NothingFoundMessage);
 
-            if (result.Videos.Count == 1)
+            if (result.Kind == QueryResultKind.Video || result.Videos.Count == 1)
             {
                 card.Video = result.Videos[0];
+                if (attachedPlaylist is { } playlist && result.Kind == QueryResultKind.Video)
+                    card.PlaylistId = playlist.Value;
                 card.IsLoading = true;
                 await LoadCardOptionsCoreAsync(card);
                 return;
@@ -1040,6 +1091,7 @@ public partial class DashboardViewModel : ViewModelBase
                 ? ex.Message
                 : ex.Message;
             AppendErrorLog(card.EditedTitle, card.ErrorMessage);
+            RememberQueued(card);
         }
     }
 
@@ -1081,11 +1133,6 @@ public partial class DashboardViewModel : ViewModelBase
                 );
                 if (match is not null)
                 {
-                    if (string.IsNullOrWhiteSpace(card.EditedTitle))
-                        card.EditedTitle = match.Title;
-                    else if (card.EditedTitle == card.Video.Title)
-                        card.EditedTitle = match.Title;
-
                     card.EditedArtist = QueuePolicy.ResolveArtist(
                         null,
                         match.Artist,
@@ -1104,12 +1151,24 @@ public partial class DashboardViewModel : ViewModelBase
                     );
                     if (year is not null)
                         card.EditedYear = year.Value.ToString();
+
+                    if (
+                        QueuePolicy.IsPlaceholderTitle(card.EditedTitle, card.SourceQuery)
+                        || card.EditedTitle == card.Video.Title
+                    )
+                    {
+                        card.EditedTitle = string.IsNullOrWhiteSpace(match.Title)
+                            ? card.Video.Title
+                            : match.Title;
+                    }
                 }
             }
             catch
             {
                 // MusicBrainz is optional
             }
+
+            RememberQueued(card);
 
             if (card.Status == DownloadStatus.Ready)
             {
@@ -1124,6 +1183,7 @@ public partial class DashboardViewModel : ViewModelBase
             card.Status = DownloadStatus.Failed;
             card.ErrorMessage = ex is YoutubeExplodeException ? ex.Message : ex.ToString();
             AppendErrorLog(card.Video?.Title ?? card.EditedTitle, card.ErrorMessage);
+            RememberQueued(card);
         }
     }
 
@@ -1301,9 +1361,11 @@ public partial class DashboardViewModel : ViewModelBase
 
     private void PrepareFile(DownloadViewModel card, string directory)
     {
-        var title = string.IsNullOrWhiteSpace(card.EditedTitle)
-            ? card.Video!.Title
-            : card.EditedTitle;
+        var title = QueuePolicy.PreferredFileTitle(
+            card.EditedArtist,
+            card.EditedTitle,
+            card.Video!.Title
+        );
         if (_settingsService.RemoveEmojiFromNames)
             title = QueuePolicy.RemoveEmoji(title);
 
@@ -1352,7 +1414,7 @@ public partial class DashboardViewModel : ViewModelBase
         if (string.IsNullOrWhiteSpace(download.FilePath))
             return;
 
-        _settingsService.DownloadHistory = DownloadHistoryList.Append(
+        _settingsService.DownloadHistory = DownloadHistoryList.Upsert(
             _settingsService.DownloadHistory,
             new DownloadHistoryEntry(
                 download.Video?.Title ?? download.FileName ?? download.FilePath,
@@ -1362,6 +1424,33 @@ public partial class DashboardViewModel : ViewModelBase
                 download.Video?.Duration
             )
         );
+    }
+
+    private void RememberQueued(DownloadViewModel card)
+    {
+        var url = card.Video?.Url ?? card.SourceQuery;
+        if (string.IsNullOrWhiteSpace(url))
+            return;
+
+        var title = QueuePolicy.PreferredFileTitle(
+            card.EditedArtist,
+            card.EditedTitle,
+            card.Video?.Title
+        );
+        if (QueuePolicy.IsPlaceholderTitle(title, card.SourceQuery))
+            title = string.IsNullOrWhiteSpace(card.Video?.Title) ? url : card.Video.Title;
+
+        _settingsService.DownloadHistory = DownloadHistoryList.Upsert(
+            _settingsService.DownloadHistory,
+            new DownloadHistoryEntry(
+                title,
+                card.FilePath ?? "",
+                DateTimeOffset.Now,
+                url,
+                card.Video?.Duration
+            )
+        );
+        _settingsService.Save();
     }
 
     [RelayCommand]

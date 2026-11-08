@@ -59,6 +59,39 @@ public static class QueuePolicy
         return TimeSpan.FromSeconds((totalBytes - downloadedBytes) / bytesPerSecond);
     }
 
+    public static bool IsPlaceholderTitle(string? title, string? sourceQuery)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+            return true;
+
+        var text = title.Trim();
+        if (
+            !string.IsNullOrWhiteSpace(sourceQuery)
+            && string.Equals(text, sourceQuery.Trim(), StringComparison.OrdinalIgnoreCase)
+        )
+            return true;
+
+        return text.Contains("://", StringComparison.Ordinal)
+            || text.Contains("youtube.com", StringComparison.OrdinalIgnoreCase)
+            || text.Contains("youtu.be", StringComparison.OrdinalIgnoreCase);
+    }
+
+    public static string PreferredFileTitle(string? artist, string? title, string? fallback)
+    {
+        var song = FirstRealTitle(title, fallback);
+        var name = artist?.Trim() ?? "";
+        if (string.IsNullOrWhiteSpace(song))
+            return string.IsNullOrWhiteSpace(name) ? "video" : name;
+
+        if (
+            string.IsNullOrWhiteSpace(name)
+            || song.Contains(name, StringComparison.OrdinalIgnoreCase)
+        )
+            return song;
+
+        return $"{name} - {song}";
+    }
+
     public static string FileNameFromTitle(string title, string container)
     {
         var cleaned = string.Join("_", title.Split(Path.GetInvalidFileNameChars())).Trim();
@@ -66,6 +99,17 @@ public static class QueuePolicy
             cleaned = "video";
 
         return cleaned + "." + container.TrimStart('.');
+    }
+
+    private static string FirstRealTitle(string? title, string? fallback)
+    {
+        if (!string.IsNullOrWhiteSpace(title) && !IsPlaceholderTitle(title, null))
+            return title.Trim();
+
+        if (!string.IsNullOrWhiteSpace(fallback) && !IsPlaceholderTitle(fallback, null))
+            return fallback.Trim();
+
+        return "";
     }
 
     public static string OutputFolder(

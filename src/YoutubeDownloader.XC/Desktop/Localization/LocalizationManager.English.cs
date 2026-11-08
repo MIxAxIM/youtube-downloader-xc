@@ -148,6 +148,7 @@ public partial class LocalizationManager
             [nameof(AudioBitrateLabel)] = "Audio bitrate",
             [nameof(PasteButton)] = "Paste link",
             [nameof(PasteTooltip)] = "Paste a link from the clipboard and add it to the queue",
+            [nameof(ImportPlaylistTooltip)] = "Import all videos from this playlist",
             [nameof(DownloadAllButton)] = "Download all",
             [nameof(WaitingLabel)] = "Waiting...",
             [nameof(DownloadedProgress)] = "Downloaded {0} of {1}",

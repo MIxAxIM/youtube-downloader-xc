@@ -16,46 +16,45 @@
             Background="{DynamicResource AppChromeBrush}"
             DockPanel.Dock="Top"
             Orientation="Vertical">
-            <Grid Margin="12,12,8,8" ColumnDefinitions="*,Auto,Auto,Auto">
-                <!--  Query  -->
-                <materialStyles:Card Grid.Column="0">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <AutoCompleteBox
-                            x:Name="QueryTextBox"
-                            Grid.Column="0"
-                            FontSize="16"
-                            FilterMode="ContainsOrdinal"
-                            ItemsSource="{Binding QuerySuggestions}"
-                            PlaceholderText="{Binding LocalizationManager.QueryPlaceholderText}"
-                            Text="{Binding Query}"
-                            ToolTip.Tip="{Binding LocalizationManager.QueryTooltip}" />
-                        <Button
-                            x:Name="ProcessQueryButton"
-                            Grid.Column="1"
-                            Margin="8,0,0,0"
-                            Padding="4"
-                            Command="{Binding ProcessQueryCommand}"
-                            IsDefault="True"
-                            Theme="{DynamicResource MaterialFlatButton}"
-                            ToolTip.Tip="{Binding LocalizationManager.ProcessQueryTooltip}">
-                            <materialIcons:MaterialIcon Width="24" Height="24" Kind="ArrowRight" />
-                        </Button>
-                    </Grid>
-                </materialStyles:Card>
+            <Grid Margin="12,8,8,8" ColumnDefinitions="*,Auto,Auto,Auto,Auto">
+                <AutoCompleteBox
+                    x:Name="QueryTextBox"
+                    Grid.Column="0"
+                    MinHeight="32"
+                    MaxHeight="36"
+                    VerticalAlignment="Center"
+                    FontSize="14"
+                    FilterMode="ContainsOrdinal"
+                    ItemsSource="{Binding QuerySuggestions}"
+                    PlaceholderText="{Binding LocalizationManager.QueryPlaceholderText}"
+                    Text="{Binding Query}"
+                    ToolTip.Tip="{Binding LocalizationManager.QueryTooltip}" />
+                <Button
+                    x:Name="ProcessQueryButton"
+                    Grid.Column="1"
+                    Margin="8,0,0,0"
+                    Padding="1"
+                    VerticalAlignment="Center"
+                    Classes="icon"
+                    Command="{Binding ProcessQueryCommand}"
+                    IsDefault="True"
+                    ToolTip.Tip="{Binding LocalizationManager.ProcessQueryTooltip}">
+                    <materialIcons:MaterialIcon Width="15" Height="15" Kind="ArrowRight" />
+                </Button>
 
                 <!--  Paste  -->
                 <Button
-                    Grid.Column="1"
+                    Grid.Column="2"
                     Margin="8,0,0,0"
-                    Padding="12,8"
+                    Padding="8,4"
                     VerticalAlignment="Center"
                     Classes="primary"
                     Command="{Binding PasteCommand}"
                     ToolTip.Tip="{Binding LocalizationManager.PasteTooltip}">
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <materialIcons:MaterialIcon
-                            Width="20"
-                            Height="20"
+                            Width="16"
+                            Height="16"
                             Kind="ContentPaste" />
                         <TextBlock VerticalAlignment="Center" Text="{Binding LocalizationManager.PasteButton}" />
                     </StackPanel>
@@ -63,39 +62,39 @@
 
                 <!--  Auth button  -->
                 <Button
-                    Grid.Column="2"
+                    Grid.Column="3"
                     Margin="8,0,0,0"
-                    Padding="8"
+                    Padding="1"
                     VerticalAlignment="Center"
                     Command="{Binding ShowAuthSetupCommand}"
                     Foreground="{DynamicResource MaterialDarkForegroundBrush}"
-                    Theme="{DynamicResource MaterialFlatButton}"
+                    Classes="icon"
                     ToolTip.Tip="{Binding LocalizationManager.AuthTooltip}">
                     <materialIcons:MaterialIcon
-                        Width="24"
-                        Height="24"
+                        Width="16"
+                        Height="16"
                         Kind="AccountKey" />
                 </Button>
 
                 <!--  Settings button  -->
                 <Button
-                    Grid.Column="3"
+                    Grid.Column="4"
                     Margin="8,0,0,0"
-                    Padding="8"
+                    Padding="1"
                     VerticalAlignment="Center"
                     Command="{Binding ShowSettingsCommand}"
                     Foreground="{DynamicResource MaterialDarkForegroundBrush}"
-                    Theme="{DynamicResource MaterialFlatButton}"
+                    Classes="icon"
                     ToolTip.Tip="{Binding LocalizationManager.SettingsTooltip}">
                     <materialIcons:MaterialIcon
-                        Width="24"
-                        Height="24"
+                        Width="16"
+                        Height="16"
                         Kind="Settings" />
                 </Button>
             </Grid>
 
             <!--  Defaults  -->
-            <Grid Margin="12,0,12,8" ColumnDefinitions="Auto,160,180,*">
+            <Grid Margin="12,0,12,8" ColumnDefinitions="Auto,Auto,80,Auto,130,*">
                 <StackPanel
                     Grid.Column="0"
                     VerticalAlignment="Center"
@@ -106,26 +105,37 @@
                         Height="18"
                         VerticalAlignment="Center"
                         Kind="VideoOutline" />
-                    <TextBlock VerticalAlignment="Center" Text="{Binding LocalizationManager.VideoLabel}" />
                     <ToggleSwitch IsChecked="{Binding IsAudioDefault}" />
                     <materialIcons:MaterialIcon
                         Width="18"
                         Height="18"
                         VerticalAlignment="Center"
                         Kind="MusicNote" />
-                    <TextBlock VerticalAlignment="Center" Text="{Binding LocalizationManager.AudioLabel}" />
                 </StackPanel>
 
-                <ComboBox
+                <TextBlock
                     Grid.Column="1"
-                    Margin="12,0,0,0"
+                    Margin="12,0,6,0"
+                    VerticalAlignment="Center"
+                    Opacity="0.75"
+                    Text="Format:" />
+                <ComboBox
+                    Grid.Column="2"
+                    Width="80"
                     VerticalAlignment="Center"
                     ItemsSource="{Binding FormatChoices}"
                     SelectedItem="{Binding SelectedFormat}" />
 
+                <TextBlock
+                    Grid.Column="3"
+                    Margin="12,0,6,0"
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding IsAudioDefault}"
+                    Opacity="0.75"
+                    Text="Quality:" />
                 <ComboBox
-                    Grid.Column="2"
-                    Margin="8,0,0,0"
+                    Grid.Column="4"
+                    Width="130"
                     VerticalAlignment="Center"
                     IsVisible="{Binding IsAudioDefault}"
                     ItemsSource="{Binding DefaultBitrateChoices}"
@@ -156,19 +166,19 @@
                 </ComboBox>
 
                 <Button
-                    Grid.Column="3"
+                    Grid.Column="5"
                     Margin="8,0,0,0"
                     HorizontalAlignment="Right"
-                    Padding="14,8"
+                    Padding="10,4"
                     Classes="primary"
                     Command="{Binding DownloadAllCommand}"
                     Content="{Binding LocalizationManager.DownloadAllButton}" />
                 <Button
-                    Grid.Column="3"
+                    Grid.Column="5"
                     Margin="0,0,120,0"
                     HorizontalAlignment="Right"
-                    Padding="8"
-                    Theme="{DynamicResource MaterialFlatButton}"
+                    Padding="1"
+                    Classes="icon"
                     ToolTip.Tip="{Binding LocalizationManager.SettingsTooltip}">
                     <Button.Flyout>
                         <MenuFlyout Placement="BottomEdgeAlignedRight">
@@ -193,7 +203,7 @@
                             <MenuItem Command="{Binding QuitAppCommand}" Header="Quit" />
                         </MenuFlyout>
                     </Button.Flyout>
-                    <materialIcons:MaterialIcon Width="20" Height="20" Kind="Cog" />
+                    <materialIcons:MaterialIcon Width="15" Height="15" Kind="Cog" />
                 </Button>
             </Grid>
 
@@ -215,11 +225,11 @@
             <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto,Auto">
                 <Button
                     Grid.Column="0"
-                    Padding="8"
+                    Padding="1"
                     Command="{Binding ClearCompletedCommand}"
-                    Theme="{DynamicResource MaterialFlatButton}"
+                    Classes="icon"
                     ToolTip.Tip="{Binding LocalizationManager.ContextMenuRemoveSuccessful}">
-                    <materialIcons:MaterialIcon Width="20" Height="20" Kind="PlaylistRemove" />
+                    <materialIcons:MaterialIcon Width="15" Height="15" Kind="PlaylistRemove" />
                 </Button>
                 <TextBlock
                     Grid.Column="1"
@@ -248,27 +258,27 @@
                 </StackPanel>
                 <Button
                     Grid.Column="4"
-                    Padding="8"
+                    Padding="1"
                     Command="{Binding OpenFolderCommand}"
-                    Theme="{DynamicResource MaterialFlatButton}"
+                    Classes="icon"
                     ToolTip.Tip="{Binding LocalizationManager.ShowFileTooltip}">
-                    <materialIcons:MaterialIcon Width="20" Height="20" Kind="FolderOpen" />
+                    <materialIcons:MaterialIcon Width="15" Height="15" Kind="FolderOpen" />
                 </Button>
                 <Button
                     Grid.Column="5"
-                    Padding="8"
+                    Padding="1"
                     Command="{Binding ShowHistoryCommand}"
-                    Theme="{DynamicResource MaterialFlatButton}"
+                    Classes="icon"
                     ToolTip.Tip="{Binding LocalizationManager.HistoryTooltip}">
-                    <materialIcons:MaterialIcon Width="20" Height="20" Kind="History" />
+                    <materialIcons:MaterialIcon Width="15" Height="15" Kind="History" />
                 </Button>
                 <Button
                     Grid.Column="6"
-                    Padding="8"
+                    Padding="1"
                     Command="{Binding ShowHelpCommand}"
-                    Theme="{DynamicResource MaterialFlatButton}"
+                    Classes="icon"
                     ToolTip.Tip="{Binding LocalizationManager.HelpTooltip}">
-                    <materialIcons:MaterialIcon Width="20" Height="20" Kind="HelpCircleOutline" />
+                    <materialIcons:MaterialIcon Width="15" Height="15" Kind="HelpCircleOutline" />
                 </Button>
             </Grid>
         </Border>
@@ -307,6 +317,7 @@
                     IsVisible="{Binding IsFilterVisible}">
                     <TextBox
                         Grid.Column="0"
+                        Classes="line"
                         PlaceholderText="Filter by title"
                         Text="{Binding QueueSearch}" />
                     <ComboBox
@@ -315,12 +326,17 @@
                         MinWidth="120"
                         ItemsSource="{Binding QueueFilters}"
                         SelectedItem="{Binding QueueFilter}" />
-                    <ToggleSwitch
+                    <TextBlock
                         Grid.Column="2"
-                        Margin="8,0,0,0"
+                        Margin="12,0,8,0"
+                        VerticalAlignment="Center"
+                        Opacity="0.8"
+                        Text="Compact cards" />
+                    <ToggleSwitch
+                        Grid.Column="3"
+                        Margin="0,0,0,0"
                         IsChecked="{Binding IsCompact}"
-                        OffContent="{Binding LocalizationManager.CompactLabel}"
-                        OnContent="{Binding LocalizationManager.CompactLabel}" />
+                        ToolTip.Tip="Show or hide the extra fields on each card" />
                 </Grid>
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <ItemsControl ItemsSource="{Binding VisibleDownloads}">
@@ -344,7 +360,7 @@
                             <Border
                                 Classes="queueCard"
                                 Classes.selected="{Binding IsSelected}"
-                                Margin="10,6"
+                                Margin="8,4"
                                 ClipToBounds="True"
                                 Opacity="0"
                                 PointerPressed="Card_OnPointerPressed"
@@ -384,7 +400,29 @@
                                             </LinearGradientBrush>
                                         </Border.Background>
                                     </Border>
-                                    <Grid Margin="10,10,10,10" ColumnDefinitions="Auto,*,Auto">
+                                    <Grid RowDefinitions="Auto,*">
+                                        <StackPanel
+                                            Grid.Row="0"
+                                            Margin="0,0,4,4"
+                                            HorizontalAlignment="Right"
+                                            Orientation="Horizontal"
+                                            Spacing="4">
+                                            <materialIcons:MaterialIcon
+                                                Width="18"
+                                                Height="18"
+                                                VerticalAlignment="Center"
+                                                Kind="VideoOutline" />
+                                            <ToggleSwitch
+                                                VerticalAlignment="Center"
+                                                IsChecked="{Binding IsAudioMode}"
+                                                IsEnabled="{Binding CanEdit}" />
+                                            <materialIcons:MaterialIcon
+                                                Width="18"
+                                                Height="18"
+                                                VerticalAlignment="Center"
+                                                Kind="MusicNote" />
+                                        </StackPanel>
+                                        <Grid Grid.Row="1" Margin="8,0,8,6" ColumnDefinitions="Auto,*,Auto" RowDefinitions="*,Auto">
                                         <Border
                                             Grid.Column="0"
                                             Width="104"
@@ -408,7 +446,7 @@
                                             </Border>
                                             </Panel>
                                         </Border>
-                                        <StackPanel Grid.Column="1" Margin="10,0,8,0" Spacing="4">
+                                        <StackPanel Grid.Column="1" Margin="8,0,6,0" Spacing="2">
                                             <TextBlock
                                                 FontSize="12"
                                                 FontWeight="SemiBold"
@@ -417,124 +455,197 @@
                                                 Text="{Binding PlaylistTitle}"
                                                 TextTrimming="CharacterEllipsis" />
                                             <TextBlock
-                                                FontSize="15"
+                                                FontSize="14"
+                                                FontWeight="SemiBold"
+                                                IsVisible="{Binding !ShowAudioDetails}"
                                                 Text="{Binding EditedTitle}"
                                                 TextTrimming="CharacterEllipsis"
                                                 ToolTip.Tip="{Binding EditedTitle}" />
-                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Grid Margin="0,2,0,2" ColumnDefinitions="Auto,72,12,Auto,*">
+                                                <TextBlock
+                                                    Margin="0,0,6,0"
+                                                    VerticalAlignment="Center"
+                                                    Opacity="0.75"
+                                                    Text="Format:" />
                                                 <ComboBox
-                                                    Width="110"
+                                                    Grid.Column="1"
+                                                    Width="72"
+                                                    HorizontalAlignment="Left"
                                                     VerticalAlignment="Center"
                                                     IsEnabled="{Binding CanEdit}"
                                                     ItemsSource="{Binding FormatChoices}"
                                                     SelectedItem="{Binding SelectedContainer}" />
-                                                <ItemsControl IsVisible="{Binding ShowQualityChips}" ItemsSource="{Binding QualityChips}">
-                                                <ItemsControl.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <StackPanel Orientation="Horizontal" Spacing="4" />
-                                                    </ItemsPanelTemplate>
-                                                </ItemsControl.ItemsPanel>
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <Button
-                                                            Padding="8,2"
-                                                            Classes.selected="{Binding IsSelected}"
-                                                            Command="{Binding $parent[ItemsControl].((components:DownloadViewModel)DataContext).SelectQualityCommand}"
-                                                            CommandParameter="{Binding}"
-                                                            Content="{Binding Label}">
-                                                            <Button.Styles>
-                                                                <Style Selector="Button.selected">
-                                                                    <Setter Property="Background" Value="#F9A825" />
-                                                                    <Setter Property="Foreground" Value="#1A1A1A" />
-                                                                </Style>
-                                                            </Button.Styles>
-                                                        </Button>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
-                                            </StackPanel>
-                                            <ComboBox
-                                                IsEnabled="{Binding CanEdit}"
-                                                IsVisible="{Binding IsAudioMode}"
-                                                ItemsSource="{Binding BitrateChoices}"
-                                                SelectedItem="{Binding SelectedBitrateChoice}">
-                                                <ComboBox.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal" Spacing="6">
-                                                            <TextBlock
-                                                                Classes.unsupported="{Binding !IsNative}"
-                                                                VerticalAlignment="Center"
-                                                                Text="{Binding Label}">
-                                                                <TextBlock.Styles>
-                                                                    <Style Selector="TextBlock.unsupported">
-                                                                        <Setter Property="Foreground" Value="#C47B00" />
-                                                                    </Style>
-                                                                </TextBlock.Styles>
-                                                            </TextBlock>
-                                                            <materialIcons:MaterialIcon
-                                                                Width="16"
-                                                                Height="16"
-                                                                VerticalAlignment="Center"
-                                                                IsVisible="{Binding !IsNative}"
-                                                                Kind="InformationOutline"
-                                                                ToolTip.Tip="{Binding #UserControl.DataContext.LocalizationManager.UnsupportedBitrateTooltip}" />
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </ComboBox.ItemTemplate>
-                                            </ComboBox>
-                                            <UniformGrid
-                                                IsVisible="{Binding ShowAudioDetails}"
-                                                Columns="2">
+                                                <TextBlock
+                                                    Grid.Column="3"
+                                                    Margin="0,0,6,0"
+                                                    VerticalAlignment="Center"
+                                                    Opacity="0.75"
+                                                    Text="Quality:" />
+                                                <Panel Grid.Column="4" VerticalAlignment="Center">
+                                                    <ComboBox
+                                                        MinWidth="120"
+                                                        HorizontalAlignment="Left"
+                                                        VerticalAlignment="Center"
+                                                        IsEnabled="{Binding CanEdit}"
+                                                        IsVisible="{Binding IsAudioMode}"
+                                                        ItemsSource="{Binding BitrateChoices}"
+                                                        SelectedItem="{Binding SelectedBitrateChoice}">
+                                                        <ComboBox.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                                    <TextBlock
+                                                                        Classes.unsupported="{Binding !IsNative}"
+                                                                        VerticalAlignment="Center"
+                                                                        Text="{Binding Label}">
+                                                                        <TextBlock.Styles>
+                                                                            <Style Selector="TextBlock.unsupported">
+                                                                                <Setter Property="Foreground" Value="#C47B00" />
+                                                                            </Style>
+                                                                        </TextBlock.Styles>
+                                                                    </TextBlock>
+                                                                    <materialIcons:MaterialIcon
+                                                                        Width="16"
+                                                                        Height="16"
+                                                                        VerticalAlignment="Center"
+                                                                        IsVisible="{Binding !IsNative}"
+                                                                        Kind="InformationOutline"
+                                                                        ToolTip.Tip="{Binding #UserControl.DataContext.LocalizationManager.UnsupportedBitrateTooltip}" />
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </ComboBox.ItemTemplate>
+                                                    </ComboBox>
+                                                    <ItemsControl IsVisible="{Binding ShowQualityChips}" ItemsSource="{Binding QualityChips}">
+                                                        <ItemsControl.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <WrapPanel Orientation="Horizontal" />
+                                                            </ItemsPanelTemplate>
+                                                        </ItemsControl.ItemsPanel>
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <Button
+                                                                    Margin="0,0,4,2"
+                                                                    Padding="6,1"
+                                                                    Classes="chip"
+                                                                    Classes.selected="{Binding IsSelected}"
+                                                                    Command="{Binding $parent[ItemsControl].((components:DownloadViewModel)DataContext).SelectQualityCommand}"
+                                                                    CommandParameter="{Binding}"
+                                                                    Content="{Binding Label}" />
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </Panel>
+                                            </Grid>
+                                            <Grid
+                                                Margin="0,2,0,0"
+                                                ColumnDefinitions="Auto,*,12,Auto,*"
+                                                IsVisible="{Binding ShowAudioDetails}">
+                                                <TextBlock
+                                                    Margin="0,0,6,0"
+                                                    VerticalAlignment="Center"
+                                                    Opacity="0.75"
+                                                    Text="Title:" />
                                                 <TextBox
-                                                    Margin="0,0,4,4"
+                                                    Grid.Column="1"
+                                                    Classes="line"
+                                                    VerticalAlignment="Center"
                                                     IsEnabled="{Binding CanEdit}"
-                                                    Text="{Binding EditedTitle}"
-                                                    PlaceholderText="{Binding LocalizationManager.TitleLabel}" />
+                                                    Text="{Binding EditedTitle}" />
+                                                <TextBlock
+                                                    Grid.Column="3"
+                                                    Margin="0,0,6,0"
+                                                    VerticalAlignment="Center"
+                                                    Opacity="0.75"
+                                                    Text="Artist:" />
                                                 <TextBox
-                                                    Margin="4,0,0,4"
+                                                    Grid.Column="4"
+                                                    Classes="line"
+                                                    VerticalAlignment="Center"
                                                     IsEnabled="{Binding CanEdit}"
-                                                    Text="{Binding EditedArtist}"
-                                                    PlaceholderText="{Binding LocalizationManager.ArtistLabel}" />
+                                                    Text="{Binding EditedArtist}" />
+                                            </Grid>
+                                            <Grid
+                                                Margin="0,2,0,0"
+                                                ColumnDefinitions="Auto,*,12,Auto,*"
+                                                IsVisible="{Binding ShowAudioDetails}">
+                                                <TextBlock
+                                                    Margin="0,0,6,0"
+                                                    VerticalAlignment="Center"
+                                                    Opacity="0.75"
+                                                    Text="Year:" />
                                                 <TextBox
-                                                    Margin="0,0,4,0"
+                                                    Grid.Column="1"
+                                                    Classes="line"
+                                                    VerticalAlignment="Center"
                                                     IsEnabled="{Binding CanEdit}"
-                                                    Text="{Binding EditedYear}"
-                                                    PlaceholderText="{Binding LocalizationManager.YearLabel}" />
+                                                    Text="{Binding EditedYear}" />
+                                                <TextBlock
+                                                    Grid.Column="3"
+                                                    Margin="0,0,6,0"
+                                                    VerticalAlignment="Center"
+                                                    Opacity="0.75"
+                                                    Text="Album:" />
                                                 <TextBox
-                                                    Margin="4,0,0,0"
+                                                    Grid.Column="4"
+                                                    Classes="line"
+                                                    VerticalAlignment="Center"
                                                     IsEnabled="{Binding CanEdit}"
-                                                    Text="{Binding EditedAlbum}"
-                                                    PlaceholderText="{Binding LocalizationManager.AlbumLabel}" />
-                                            </UniformGrid>
-                                            <TextBlock
-                                                Opacity="0.7"
-                                                IsVisible="{Binding FileNamePreview, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                                Text="{Binding FileNamePreview}"
-                                                TextTrimming="CharacterEllipsis" />
-                                            <TextBlock
-                                                Opacity="0.7"
-                                                IsVisible="{Binding EstimatedSizeText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                                Text="{Binding EstimatedSizeText}" />
-                                            <StackPanel
-                                                IsVisible="{Binding CanEdit}"
-                                                Orientation="Horizontal"
-                                                Spacing="6">
-                                                <TextBox
-                                                    Width="70"
+                                                    Text="{Binding EditedAlbum}" />
+                                            </Grid>
+                                            <WrapPanel IsVisible="{Binding CanEdit}" Orientation="Horizontal">
+                                                <TextBlock
+                                                    Margin="0,0,6,0"
+                                                    VerticalAlignment="Center"
+                                                    IsVisible="{Binding ShowSubtitleChoice}"
+                                                    Opacity="0.75"
+                                                    Text="Subtitles:" />
+                                                <ComboBox
+                                                    Width="88"
+                                                    Margin="0,0,12,0"
+                                                    VerticalAlignment="Center"
+                                                    IsVisible="{Binding ShowSubtitleChoice}"
+                                                    ItemsSource="{Binding SubtitleChoices}"
+                                                    SelectedItem="{Binding SubtitleChoice}" />
+                                                <TextBlock
+                                                    Margin="0,0,6,0"
+                                                    VerticalAlignment="Center"
                                                     IsVisible="{Binding !IsAudioMode}"
-                                                    PlaceholderText="Start"
+                                                    Opacity="0.75"
+                                                    Text="Start:" />
+                                                <TextBox
+                                                    Width="64"
+                                                    Margin="0,0,10,0"
+                                                    Classes="line"
+                                                    VerticalAlignment="Center"
+                                                    IsVisible="{Binding !IsAudioMode}"
                                                     Text="{Binding ClipStartText}" />
-                                                <TextBox
-                                                    Width="70"
+                                                <TextBlock
+                                                    Margin="0,0,6,0"
+                                                    VerticalAlignment="Center"
                                                     IsVisible="{Binding !IsAudioMode}"
-                                                    PlaceholderText="End"
+                                                    Opacity="0.75"
+                                                    Text="End:" />
+                                                <TextBox
+                                                    Width="64"
+                                                    Margin="0,0,10,0"
+                                                    Classes="line"
+                                                    VerticalAlignment="Center"
+                                                    IsVisible="{Binding !IsAudioMode}"
                                                     Text="{Binding ClipEndText}" />
-                                                <TextBox
-                                                    Width="70"
+                                                <TextBlock
+                                                    Margin="0,0,6,0"
+                                                    VerticalAlignment="Center"
                                                     IsVisible="{Binding !IsAudioMode}"
-                                                    PlaceholderText="Cover"
+                                                    Opacity="0.75"
+                                                    Text="Cover:" />
+                                                <TextBox
+                                                    Width="64"
+                                                    Margin="0,0,10,0"
+                                                    Classes="line"
+                                                    VerticalAlignment="Center"
+                                                    IsVisible="{Binding !IsAudioMode}"
                                                     Text="{Binding CoverTimeText}" />
                                                 <CheckBox
+                                                    Margin="0,0,8,0"
                                                     Content="Video only"
                                                     IsChecked="{Binding VideoOnly}"
                                                     IsVisible="{Binding !IsAudioMode}" />
@@ -542,7 +653,7 @@
                                                     Content="SRT"
                                                     IsChecked="{Binding SaveSrt}"
                                                     IsVisible="{Binding !IsAudioMode}" />
-                                            </StackPanel>
+                                            </WrapPanel>
                                             <TextBlock
                                                 Opacity="0.8"
                                                 PointerReleased="StatusTextBlock_OnPointerReleased"
@@ -555,6 +666,25 @@
                                                 Text="{Binding TimeRemainingText}" />
                                         </StackPanel>
                                         <StackPanel
+                                            Grid.Row="1"
+                                            Grid.Column="0"
+                                            Grid.ColumnSpan="3"
+                                            Margin="0,8,0,0"
+                                            Orientation="Horizontal"
+                                            Spacing="16">
+                                            <TextBlock
+                                                VerticalAlignment="Center"
+                                                Opacity="0.75"
+                                                IsVisible="{Binding FileNamePreview, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                Text="{Binding FileNamePreview}"
+                                                TextTrimming="CharacterEllipsis" />
+                                            <TextBlock
+                                                VerticalAlignment="Center"
+                                                Opacity="0.75"
+                                                IsVisible="{Binding EstimatedSizeText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                Text="{Binding EstimatedSizeText}" />
+                                        </StackPanel>
+                                        <StackPanel
                                             Grid.Column="2"
                                             VerticalAlignment="Center"
                                             Orientation="Horizontal">
@@ -564,107 +694,113 @@
                                                 IsIndeterminate="True"
                                                 IsVisible="{Binding IsLoading}"
                                                 Theme="{DynamicResource MaterialCircularProgressBar}" />
-                                            <ToggleSwitch IsChecked="{Binding IsAudioMode}" IsEnabled="{Binding CanEdit}" />
-                                            <ComboBox
-                                                MinWidth="80"
-                                                IsVisible="{Binding ShowSubtitleChoice}"
-                                                ItemsSource="{Binding SubtitleChoices}"
-                                                SelectedItem="{Binding SubtitleChoice}"
-                                                ToolTip.Tip="{Binding LocalizationManager.SubtitlesLabel}" />
                                             <Button
-                                                Padding="10,6"
-                                                Classes="primary"
+                                                Padding="1"
+                                                Classes="icon"
+                                                Command="{Binding #UserControl.((components:DashboardViewModel)DataContext).ImportPlaylistCommand}"
+                                                CommandParameter="{Binding}"
+                                                IsEnabled="{Binding CanImportPlaylist}"
+                                                IsVisible="{Binding PlaylistId, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                ToolTip.Tip="{Binding LocalizationManager.ImportPlaylistTooltip}">
+                                                <materialIcons:MaterialIcon Width="15" Height="15" Kind="PlaylistPlay" />
+                                            </Button>
+                                            <Button
+                                                MinWidth="0"
+                                                MinHeight="0"
+                                                Padding="1"
+                                                Classes="primary icon"
                                                 Command="{Binding #UserControl.((components:DashboardViewModel)DataContext).StartDownloadCommand}"
                                                 CommandParameter="{Binding}"
                                                 IsVisible="{Binding CanStart}"
                                                 ToolTip.Tip="{Binding LocalizationManager.DownloadButton}">
-                                                <materialIcons:MaterialIcon Width="22" Height="22" Kind="Download" />
+                                                <materialIcons:MaterialIcon Width="15" Height="15" Kind="Download" />
                                             </Button>
                                             <Button
-                                                Padding="4"
+                                                Padding="1"
                                                 Command="{Binding PauseDownloadCommand}"
                                                 IsVisible="{Binding CanPause}"
-                                                Theme="{DynamicResource MaterialFlatButton}"
+                                                Classes="icon"
                                                 ToolTip.Tip="{Binding LocalizationManager.PauseLabel}">
-                                                <materialIcons:MaterialIcon Width="22" Height="22" Kind="Pause" />
+                                                <materialIcons:MaterialIcon Width="15" Height="15" Kind="Pause" />
                                             </Button>
                                             <Button
-                                                Padding="4"
+                                                Padding="1"
                                                 Command="{Binding ResumeDownloadCommand}"
                                                 IsVisible="{Binding CanResume}"
-                                                Theme="{DynamicResource MaterialFlatButton}"
+                                                Classes="icon"
                                                 ToolTip.Tip="{Binding LocalizationManager.ResumeLabel}">
-                                                <materialIcons:MaterialIcon Width="22" Height="22" Kind="Play" />
+                                                <materialIcons:MaterialIcon Width="15" Height="15" Kind="Play" />
                                             </Button>
                                             <Button
-                                                Padding="4"
+                                                Padding="1"
                                                 Command="{Binding #UserControl.((components:DashboardViewModel)DataContext).CopyLinkCommand}"
                                                 CommandParameter="{Binding}"
                                                 IsVisible="{Binding CanCopyLink}"
-                                                Theme="{DynamicResource MaterialFlatButton}"
+                                                Classes="icon"
                                                 ToolTip.Tip="{Binding LocalizationManager.CopyLinkLabel}">
-                                                <materialIcons:MaterialIcon Width="22" Height="22" Kind="ContentCopy" />
+                                                <materialIcons:MaterialIcon Width="15" Height="15" Kind="ContentCopy" />
                                             </Button>
                                             <Button
-                                                Padding="4"
+                                                Padding="1"
                                                 Command="{Binding #UserControl.((components:DashboardViewModel)DataContext).SaveAudioFromFileCommand}"
                                                 CommandParameter="{Binding}"
                                                 IsVisible="{Binding CanSaveAudio}"
-                                                Theme="{DynamicResource MaterialFlatButton}"
+                                                Classes="icon"
                                                 ToolTip.Tip="{Binding LocalizationManager.SaveAudioLabel}">
-                                                <materialIcons:MaterialIcon Width="22" Height="22" Kind="MusicNote" />
+                                                <materialIcons:MaterialIcon Width="15" Height="15" Kind="MusicNote" />
                                             </Button>
                                             <Button
-                                                Padding="4"
+                                                Padding="1"
                                                 Command="{Binding ShowFileCommand}"
                                                 IsVisible="{Binding $self.IsEffectivelyEnabled}"
-                                                Theme="{DynamicResource MaterialFlatButton}"
+                                                Classes="icon"
                                                 ToolTip.Tip="{Binding LocalizationManager.ShowFileTooltip}">
-                                                <materialIcons:MaterialIcon Width="22" Height="22" Kind="FileFindOutline" />
+                                                <materialIcons:MaterialIcon Width="15" Height="15" Kind="FileFindOutline" />
                                             </Button>
                                             <Button
-                                                Padding="4"
+                                                Padding="1"
                                                 Command="{Binding OpenFileCommand}"
                                                 IsVisible="{Binding $self.IsEffectivelyEnabled}"
-                                                Theme="{DynamicResource MaterialFlatButton}"
+                                                Classes="icon"
                                                 ToolTip.Tip="{Binding LocalizationManager.PlayTooltip}">
-                                                <materialIcons:MaterialIcon Width="22" Height="22" Kind="PlayCircleOutline" />
+                                                <materialIcons:MaterialIcon Width="15" Height="15" Kind="PlayCircleOutline" />
                                             </Button>
                                             <Button
-                                                Padding="4"
+                                                Padding="1"
                                                 Command="{Binding CancelCommand}"
                                                 IsVisible="{Binding $self.IsEffectivelyEnabled}"
-                                                Theme="{DynamicResource MaterialFlatButton}"
+                                                Classes="icon"
                                                 ToolTip.Tip="{Binding LocalizationManager.CancelDownloadTooltip}">
-                                                <materialIcons:MaterialIcon Width="22" Height="22" Kind="StopCircleOutline" />
+                                                <materialIcons:MaterialIcon Width="15" Height="15" Kind="StopCircleOutline" />
                                             </Button>
                                             <Button
-                                                Padding="4"
+                                                Padding="1"
                                                 Command="{Binding #UserControl.((components:DashboardViewModel)DataContext).ReloadCardCommand}"
                                                 CommandParameter="{Binding}"
                                                 IsVisible="{Binding CanReload}"
-                                                Theme="{DynamicResource MaterialFlatButton}"
+                                                Classes="icon"
                                                 ToolTip.Tip="{Binding LocalizationManager.RestartDownloadTooltip}">
-                                                <materialIcons:MaterialIcon Width="22" Height="22" Kind="Reload" />
+                                                <materialIcons:MaterialIcon Width="15" Height="15" Kind="Reload" />
                                             </Button>
                                             <Button
-                                                Padding="4"
+                                                Padding="1"
                                                 Command="{Binding #UserControl.((components:DashboardViewModel)DataContext).DownloadAgainCommand}"
                                                 CommandParameter="{Binding}"
                                                 IsVisible="{Binding CanDownloadAgain}"
-                                                Theme="{DynamicResource MaterialFlatButton}"
+                                                Classes="icon"
                                                 ToolTip.Tip="{Binding LocalizationManager.RestartDownloadTooltip}">
-                                                <materialIcons:MaterialIcon Width="22" Height="22" Kind="Download" />
+                                                <materialIcons:MaterialIcon Width="15" Height="15" Kind="Download" />
                                             </Button>
                                             <Button
-                                                Padding="4"
+                                                Padding="1"
                                                 Command="{Binding #UserControl.((components:DashboardViewModel)DataContext).CloseCardCommand}"
                                                 CommandParameter="{Binding}"
-                                                Theme="{DynamicResource MaterialFlatButton}"
+                                                Classes="icon"
                                                 ToolTip.Tip="{Binding LocalizationManager.CancelDownloadTooltip}">
-                                                <materialIcons:MaterialIcon Width="22" Height="22" Kind="Close" />
+                                                <materialIcons:MaterialIcon Width="15" Height="15" Kind="Close" />
                                             </Button>
                                         </StackPanel>
+                                    </Grid>
                                     </Grid>
                                     </Grid>
                                 </Grid>

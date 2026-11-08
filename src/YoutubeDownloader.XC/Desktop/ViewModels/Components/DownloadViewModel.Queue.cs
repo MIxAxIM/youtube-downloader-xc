@@ -52,7 +52,7 @@ public partial class DownloadViewModel
 
     public bool HasOptions => _options.Count > 0;
 
-    public bool ShowQualityChips => CanEdit && !IsAudioMode && !IsCompact;
+    public bool ShowQualityChips => CanEdit && !IsAudioMode;
 
     public bool ShowAudioDetails => CanEdit && !IsCompact;
 
@@ -87,6 +87,7 @@ public partial class DownloadViewModel
     public partial string EditedTitle { get; set; } = "";
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(FileNamePreview))]
     public partial string EditedArtist { get; set; } = "";
 
     [ObservableProperty]
@@ -104,6 +105,16 @@ public partial class DownloadViewModel
 
     [ObservableProperty]
     public partial string? PlaylistTitle { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanImportPlaylist))]
+    public partial string? PlaylistId { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanImportPlaylist))]
+    public partial bool IsImportingPlaylist { get; set; }
+
+    public bool CanImportPlaylist => !string.IsNullOrWhiteSpace(PlaylistId) && !IsImportingPlaylist;
 
     [ObservableProperty]
     public partial string? SourceQuery { get; set; }
@@ -149,7 +160,7 @@ public partial class DownloadViewModel
 
     public string FileNamePreview =>
         QueuePolicy.FileNameFromTitle(
-            string.IsNullOrWhiteSpace(EditedTitle) ? Video?.Title ?? "video" : EditedTitle,
+            QueuePolicy.PreferredFileTitle(EditedArtist, EditedTitle, Video?.Title),
             SelectedContainer.Name
         );
 
@@ -310,8 +321,8 @@ public partial class DownloadViewModel
         OnPropertyChanged(nameof(DurationText));
         OnPropertyChanged(nameof(ArtistText));
         OnPropertyChanged(nameof(DateText));
-        if (string.IsNullOrWhiteSpace(EditedTitle))
-            EditedTitle = value?.Title ?? "";
+        if (value is not null && QueuePolicy.IsPlaceholderTitle(EditedTitle, SourceQuery))
+            EditedTitle = value.Title;
         if (string.IsNullOrWhiteSpace(EditedArtist))
             EditedArtist = value?.Author.ChannelTitle ?? "";
         if (value is YoutubeExplode.Videos.Video full && string.IsNullOrWhiteSpace(EditedYear))

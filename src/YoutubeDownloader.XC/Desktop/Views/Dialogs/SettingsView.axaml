@@ -5,6 +5,8 @@
     xmlns:converters="clr-namespace:YoutubeDownloader.XC.Converters"
     xmlns:dialogs="clr-namespace:YoutubeDownloader.XC.ViewModels.Dialogs"
     xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    x:Name="SettingsRoot"
+    Classes="settingsView"
     x:DataType="dialogs:SettingsViewModel">
     <Grid RowDefinitions="*,Auto">
         <Grid Grid.Row="0" ColumnDefinitions="160,*" Margin="0,8,0,0">
@@ -48,7 +50,7 @@
                                     Text="{Binding LocalizationManager.ThemeLabel}" />
                                 <ComboBox
                                     Width="160"
-                                    MinHeight="32"
+                                    MinHeight="0"
                                     DockPanel.Dock="Right"
                                     ItemsSource="{Binding AvailableThemes}"
                                     SelectedItem="{Binding Theme}" />
@@ -60,7 +62,7 @@
                                     Text="{Binding LocalizationManager.LanguageLabel}" />
                                 <ComboBox
                                     Width="160"
-                                    MinHeight="32"
+                                    MinHeight="0"
                                     DockPanel.Dock="Right"
                                     ItemsSource="{Binding AvailableLanguages}"
                                     SelectedItem="{Binding Language}">
@@ -103,13 +105,6 @@
                                 <TextBlock
                                     VerticalAlignment="Center"
                                     DockPanel.Dock="Left"
-                                    Text="{Binding LocalizationManager.AutoExpandPlaylistLabel}" />
-                                <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding AutoExpandPlaylist}" />
-                            </DockPanel>
-                            <DockPanel Margin="8" LastChildFill="False">
-                                <TextBlock
-                                    VerticalAlignment="Center"
-                                    DockPanel.Dock="Left"
                                     Text="{Binding LocalizationManager.AutoAddClipboardLabel}" />
                                 <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding AutoAddClipboardLinks}" />
                             </DockPanel>
@@ -126,8 +121,8 @@
                                     DockPanel.Dock="Left"
                                     Text="History retention (0=forever, 30 days)" />
                                 <NumericUpDown
-                                    Width="72"
-                                    MinHeight="32"
+                                    Width="132"
+                                    MinHeight="0"
                                     HorizontalAlignment="Right"
                                     DockPanel.Dock="Right"
                                     FormatString="0"
@@ -138,25 +133,25 @@
                             <StackPanel Margin="8" Orientation="Horizontal" Spacing="8">
                                 <Button
                                     MinWidth="120"
-                                    MinHeight="32"
+                                    MinHeight="0"
                                     Padding="12,4"
                                     Command="{Binding ExportSettingsCommand}"
                                     Content="Export settings"
-                                    Theme="{DynamicResource MaterialOutlineButton}" />
+                                    Classes="dialog" />
                                 <Button
                                     MinWidth="120"
-                                    MinHeight="32"
+                                    MinHeight="0"
                                     Padding="12,4"
                                     Command="{Binding ImportSettingsCommand}"
                                     Content="Import settings"
-                                    Theme="{DynamicResource MaterialOutlineButton}" />
+                                    Classes="dialog" />
                                 <Button
                                     MinWidth="140"
-                                    MinHeight="32"
+                                    MinHeight="0"
                                     Padding="12,4"
                                     Command="{Binding ClearThumbnailCacheCommand}"
                                     Content="Clear thumbnail cache"
-                                    Theme="{DynamicResource MaterialOutlineButton}" />
+                                    Classes="dialog" />
                             </StackPanel>
                             <DockPanel Margin="8" LastChildFill="False">
                                 <TextBlock
@@ -166,23 +161,21 @@
                                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="4">
                                     <TextBox
                                         Width="220"
-                                        MinHeight="32"
+                                        MinHeight="0"
                                         Text="{Binding FFmpegFilePath}"
                                         PlaceholderText="{Binding LocalizationManager.FFmpegPathPlaceholderText}" />
                                     <Button
-                                        Width="32"
-                                        MinHeight="32"
-                                        Padding="0"
+                                        VerticalAlignment="Center"
+                                        FontSize="12"
                                         Command="{Binding BrowseFFmpegFilePathCommand}"
                                         Content="..."
-                                        Theme="{DynamicResource MaterialOutlineButton}" />
+                                        Classes="icon" />
                                     <Button
-                                        Width="32"
-                                        MinHeight="32"
-                                        Padding="0"
+                                        VerticalAlignment="Center"
+                                        FontSize="14"
                                         Command="{Binding ResetFFmpegFilePathCommand}"
                                         Content="×"
-                                        Theme="{DynamicResource MaterialFlatButton}" />
+                                        Classes="icon" />
                                 </StackPanel>
                             </DockPanel>
                         </StackPanel>
@@ -195,8 +188,8 @@
                                     DockPanel.Dock="Left"
                                     Text="{Binding LocalizationManager.ParallelLimitLabel}" />
                                 <NumericUpDown
-                                    Width="72"
-                                    MinHeight="32"
+                                    Width="132"
+                                    MinHeight="0"
                                     HorizontalAlignment="Right"
                                     DockPanel.Dock="Right"
                                     FormatString="0"
@@ -210,14 +203,13 @@
                                     DockPanel.Dock="Left"
                                     Text="{Binding LocalizationManager.VideoFolderLabel}" />
                                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="4">
-                                    <TextBox Width="240" MinHeight="32" Text="{Binding VideoFolder}" />
+                                    <TextBox Width="240" MinHeight="0" Text="{Binding VideoFolder}" />
                                     <Button
-                                        Width="32"
-                                        MinHeight="32"
-                                        Padding="0"
+                                        VerticalAlignment="Center"
+                                        FontSize="12"
                                         Command="{Binding BrowseVideoFolderCommand}"
                                         Content="..."
-                                        Theme="{DynamicResource MaterialOutlineButton}" />
+                                        Classes="icon" />
                                 </StackPanel>
                             </DockPanel>
                             <DockPanel Margin="8" LastChildFill="False">
@@ -226,14 +218,13 @@
                                     DockPanel.Dock="Left"
                                     Text="{Binding LocalizationManager.AudioFolderLabel}" />
                                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="4">
-                                    <TextBox Width="240" MinHeight="32" Text="{Binding AudioFolder}" />
+                                    <TextBox Width="240" MinHeight="0" Text="{Binding AudioFolder}" />
                                     <Button
-                                        Width="32"
-                                        MinHeight="32"
-                                        Padding="0"
+                                        VerticalAlignment="Center"
+                                        FontSize="12"
                                         Command="{Binding BrowseAudioFolderCommand}"
                                         Content="..."
-                                        Theme="{DynamicResource MaterialOutlineButton}" />
+                                        Classes="icon" />
                                 </StackPanel>
                             </DockPanel>
                             <DockPanel Margin="8" LastChildFill="False">
@@ -285,7 +276,7 @@
                                     Text="{Binding LocalizationManager.ProxyProtocolLabel}" />
                                 <ComboBox
                                     Width="140"
-                                    MinHeight="32"
+                                    MinHeight="0"
                                     DockPanel.Dock="Right"
                                     ItemsSource="{Binding AvailableProxyProtocols}"
                                     SelectedItem="{Binding ProxyProtocol}" />
@@ -297,7 +288,7 @@
                                     Text="{Binding LocalizationManager.ProxyHostLabel}" />
                                 <TextBox
                                     Width="200"
-                                    MinHeight="32"
+                                    MinHeight="0"
                                     DockPanel.Dock="Right"
                                     Text="{Binding ProxyHost}" />
                             </DockPanel>
@@ -307,8 +298,8 @@
                                     DockPanel.Dock="Left"
                                     Text="{Binding LocalizationManager.ProxyPortLabel}" />
                                 <NumericUpDown
-                                    Width="88"
-                                    MinHeight="32"
+                                    Width="132"
+                                    MinHeight="0"
                                     HorizontalAlignment="Right"
                                     DockPanel.Dock="Right"
                                     FormatString="0"
@@ -323,7 +314,7 @@
                                     Text="{Binding LocalizationManager.ProxyUsernameLabel}" />
                                 <TextBox
                                     Width="200"
-                                    MinHeight="32"
+                                    MinHeight="0"
                                     DockPanel.Dock="Right"
                                     Text="{Binding ProxyUsername}" />
                             </DockPanel>
@@ -334,7 +325,7 @@
                                     Text="{Binding LocalizationManager.ProxyPasswordLabel}" />
                                 <TextBox
                                     Width="200"
-                                    MinHeight="32"
+                                    MinHeight="0"
                                     DockPanel.Dock="Right"
                                     PasswordChar="•"
                                     Text="{Binding ProxyPassword}" />
@@ -345,8 +336,8 @@
                                     DockPanel.Dock="Left"
                                     Text="{Binding LocalizationManager.ConnectionsPerDownloadLabel}" />
                                 <NumericUpDown
-                                    Width="72"
-                                    MinHeight="32"
+                                    Width="132"
+                                    MinHeight="0"
                                     HorizontalAlignment="Right"
                                     DockPanel.Dock="Right"
                                     FormatString="0"
@@ -357,12 +348,12 @@
                             <StackPanel Margin="8" Orientation="Horizontal" Spacing="8">
                                 <Button
                                     MinWidth="100"
-                                    MinHeight="32"
+                                    MinHeight="0"
                                     Padding="12,4"
                                     Command="{Binding TestProxyCommand}"
                                     Content="{Binding LocalizationManager.ProxyTestButton}"
                                     IsEnabled="{Binding !IsProxyTesting}"
-                                    Theme="{DynamicResource MaterialOutlineButton}" />
+                                    Classes="dialog" />
                                 <TextBlock VerticalAlignment="Center" Text="{Binding ProxyTestResult}" />
                             </StackPanel>
                         </StackPanel>
@@ -376,7 +367,7 @@
                                     Text="{Binding LocalizationManager.FileNameTemplateLabel}" />
                                 <TextBox
                                     Width="240"
-                                    MinHeight="32"
+                                    MinHeight="0"
                                     DockPanel.Dock="Right"
                                     Text="{Binding AudioFileNameTemplate}" />
                             </DockPanel>
@@ -419,7 +410,7 @@
                                     Text="{Binding LocalizationManager.FileNameTemplateLabel}" />
                                 <TextBox
                                     Width="240"
-                                    MinHeight="32"
+                                    MinHeight="0"
                                     DockPanel.Dock="Right"
                                     Text="{Binding VideoFileNameTemplate}" />
                             </DockPanel>
@@ -469,7 +460,7 @@
                                     Text="Year source" />
                                 <ComboBox
                                     Width="140"
-                                    MinHeight="32"
+                                    MinHeight="0"
                                     DockPanel.Dock="Right"
                                     ItemsSource="{Binding YearTagSources}"
                                     SelectedItem="{Binding YearTagSource}" />
@@ -481,7 +472,7 @@
                                     Text="Default album artist" />
                                 <TextBox
                                     Width="200"
-                                    MinHeight="32"
+                                    MinHeight="0"
                                     DockPanel.Dock="Right"
                                     Text="{Binding DefaultAlbumArtist}" />
                             </DockPanel>
@@ -535,12 +526,12 @@
                             <Button
                                 Margin="8"
                                 MinWidth="220"
-                                MinHeight="32"
+                                MinHeight="0"
                                 Padding="12,4"
                                 HorizontalAlignment="Left"
                                 Command="{Binding ImportBrowserCookiesCommand}"
                                 Content="Import cookies from Chrome / Edge"
-                                Theme="{DynamicResource MaterialOutlineButton}" />
+                                Classes="dialog" />
                         </StackPanel>
                     </Panel>
                 </ScrollViewer>
@@ -555,10 +546,10 @@
                 MinWidth="132"
                 MinHeight="36"
                 Padding="16,6"
+                Classes="dialog"
                 VerticalAlignment="Center"
                 Command="{Binding RestoreTabDefaultsCommand}"
-                Content="{Binding LocalizationManager.RestoreDefaultsButton}"
-                Theme="{DynamicResource MaterialOutlineButton}" />
+                Content="{Binding LocalizationManager.RestoreDefaultsButton}" />
             <StackPanel
                 Grid.Column="2"
                 VerticalAlignment="Center"
@@ -568,23 +559,23 @@
                     MinWidth="88"
                     MinHeight="36"
                     Padding="16,6"
+                    Classes="dialog"
                     Command="{Binding ApplyCommand}"
-                    Content="{Binding LocalizationManager.ApplyButton}"
-                    Theme="{DynamicResource MaterialFlatButton}" />
+                    Content="{Binding LocalizationManager.ApplyButton}" />
                 <Button
                     MinWidth="88"
                     MinHeight="36"
                     Padding="16,6"
+                    Classes="dialog"
                     Command="{Binding CancelCommand}"
-                    Content="{Binding LocalizationManager.CancelButton}"
-                    Theme="{DynamicResource MaterialFlatButton}" />
+                    Content="{Binding LocalizationManager.CancelButton}" />
                 <Button
                     MinWidth="88"
                     MinHeight="36"
                     Padding="16,6"
+                    Classes="dialog accent"
                     Command="{Binding OkCommand}"
-                    Content="{Binding LocalizationManager.OkButton}"
-                    Theme="{DynamicResource MaterialOutlineButton}" />
+                    Content="{Binding LocalizationManager.OkButton}" />
             </StackPanel>
         </Grid>
     </Grid>

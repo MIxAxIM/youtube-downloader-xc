@@ -39,20 +39,30 @@
         <!--  Combo box  -->
         <Style Selector="ComboBox">
             <Setter Property="FontSize" Value="14" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="MaxHeight" Value="20" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Bottom" />
 
             <Style Selector="^ /template/ Panel#PART_RootPanel">
-                <Setter Property="Height" Value="22" />
+                <Setter Property="Height" Value="20" />
+                <Setter Property="MinHeight" Value="0" />
+                <Setter Property="Margin" Value="0" />
             </Style>
 
-            <Style Selector="^ /template/ ToggleButton">
-                <Style Selector="^:checked, ^:unchecked">
-                    <Setter Property="Margin" Value="0" />
-                    <Setter Property="CornerRadius" Value="0" />
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Margin" Value="0,0,0,2" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="VerticalAlignment" Value="Bottom" />
+                <Setter Property="VerticalContentAlignment" Value="Bottom" />
+            </Style>
 
-                    <Style Selector="^ ContentPresenter#contentPresenter">
-                        <Setter Property="Margin" Value="12,8" />
-                    </Style>
-                </Style>
+            <Style Selector="^ /template/ materialControls|MaterialUnderline">
+                <Setter Property="Height" Value="1" />
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="VerticalAlignment" Value="Bottom" />
             </Style>
         </Style>
 
@@ -161,26 +171,217 @@
             </Style>
         </Style>
 
-        <!--  Primary amber buttons  -->
+        <!--  Solid buttons: no Material white plate behind the corners  -->
+        <Style Selector="Button.primary, Button.chip, Button.icon, Button.dialog">
+            <Setter Property="ClipToBounds" Value="True" />
+            <Setter Property="Background" Value="#2C2C2C" />
+            <Setter Property="Foreground" Value="#F2F2F2" />
+            <Setter Property="BorderBrush" Value="#5A5A5A" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border
+                        Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        ClipToBounds="True"
+                        CornerRadius="{TemplateBinding CornerRadius}">
+                        <ContentPresenter
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            Content="{TemplateBinding Content}"
+                            Foreground="{TemplateBinding Foreground}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
         <Style Selector="Button.primary">
-            <Setter Property="Background" Value="{DynamicResource AppAccentBrush}" />
+            <Setter Property="Background" Value="#F9A825" />
             <Setter Property="Foreground" Value="#1A1A1A" />
-            <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Style Selector="^:pointerover /template/ ContentPresenter">
-                <Setter Property="Background" Value="{DynamicResource AppAccentHoverBrush}" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="10,4" />
+            <Setter Property="MinHeight" Value="28" />
+            <Setter Property="FontSize" Value="13" />
+        </Style>
+        <Style Selector="Button.primary:pointerover">
+            <Setter Property="Background" Value="#FFB74D" />
+        </Style>
+        <Style Selector="Button.chip">
+            <Setter Property="Background" Value="#3A3A3A" />
+            <Setter Property="Foreground" Value="#F4F4F4" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style Selector="Button.chip:pointerover">
+            <Setter Property="Background" Value="#4A4A4A" />
+        </Style>
+        <Style Selector="Button.chip.selected">
+            <Setter Property="Background" Value="#F9A825" />
+            <Setter Property="Foreground" Value="#1A1A1A" />
+            <Setter Property="BorderBrush" Value="#F9A825" />
+        </Style>
+        <Style Selector="Button.icon">
+            <Setter Property="Width" Value="22" />
+            <Setter Property="Height" Value="22" />
+            <Setter Property="Padding" Value="2" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button.primary.icon">
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Width" Value="22" />
+            <Setter Property="Height" Value="22" />
+            <Setter Property="Padding" Value="2" />
+        </Style>
+        <Style Selector="Button.icon:pointerover">
+            <Setter Property="Background" Value="#404040" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.dialog.accent">
+            <Setter Property="Background" Value="#F9A825" />
+            <Setter Property="Foreground" Value="#1A1A1A" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+
+        <!--  Dark menus  -->
+        <Style Selector="ComboBox /template/ Popup Border">
+            <Setter Property="Background" Value="#242424" />
+            <Setter Property="BorderBrush" Value="#555555" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style Selector="ComboBoxItem">
+            <Setter Property="Background" Value="#242424" />
+            <Setter Property="Foreground" Value="#F4F4F4" />
+            <Setter Property="Padding" Value="10,6" />
+        </Style>
+        <Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#3A3A3A" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="ComboBoxItem:selected /template/ ContentPresenter">
+            <Setter Property="Background" Value="#F9A825" />
+            <Setter Property="Foreground" Value="#1A1A1A" />
+        </Style>
+
+        <!--  Underline fields. The query box keeps the search-field layout.  -->
+        <Style Selector="TextBox.line, UserControl.settingsView TextBox, NumericUpDown TextBox">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="MaxHeight" Value="20" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Bottom" />
+
+            <Style Selector="^ /template/ Border#PART_RootBorder">
+                <Setter Property="ClipToBounds" Value="False" />
+                <Setter Property="MinHeight" Value="0" />
+            </Style>
+            <Style Selector="^ /template/ Panel#PART_TextFieldPanel">
+                <Setter Property="MinHeight" Value="0" />
+                <Setter Property="Height" Value="20" />
+                <Setter Property="MaxHeight" Value="20" />
+            </Style>
+            <Style Selector="^ /template/ Panel#PART_TextContainer">
+                <Setter Property="Margin" Value="0,0,2,0" />
+                <Setter Property="VerticalAlignment" Value="Bottom" />
+            </Style>
+            <Style Selector="^ /template/ ScrollViewer#PART_ScrollViewer">
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="MaxHeight" Value="18" />
+                <Setter Property="VerticalAlignment" Value="Bottom" />
+            </Style>
+            <Style Selector="^ /template/ TextPresenter#PART_TextPresenter">
+                <Setter Property="Margin" Value="0,0,0,2" />
+                <Setter Property="VerticalAlignment" Value="Bottom" />
+            </Style>
+            <Style Selector="^ /template/ TextBlock#PART_PlaceholderText">
+                <Setter Property="Margin" Value="0,0,0,2" />
+                <Setter Property="VerticalAlignment" Value="Bottom" />
+            </Style>
+            <Style Selector="^ /template/ Border#PART_LabelRootBorder">
+                <Setter Property="IsVisible" Value="False" />
+                <Setter Property="Height" Value="0" />
+            </Style>
+            <Style Selector="^ /template/ materialControls|MaterialUnderline#PART_Underline">
+                <Setter Property="Height" Value="1" />
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="VerticalAlignment" Value="Bottom" />
             </Style>
         </Style>
 
-        <!--  Rounded inputs  -->
-        <Style Selector="TextBox">
-            <Setter Property="CornerRadius" Value="10" />
-        </Style>
-        <Style Selector="ComboBox">
-            <Setter Property="CornerRadius" Value="10" />
-        </Style>
         <Style Selector="AutoCompleteBox">
-            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="MaxHeight" Value="36" />
+            <Setter Property="Padding" Value="8,0" />
+        </Style>
+        <Style Selector="AutoCompleteBox /template/ TextBox">
+            <Setter Property="MinHeight" Value="28" />
+            <Setter Property="MaxHeight" Value="32" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+
+        <Style Selector="NumericUpDown">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="MaxHeight" Value="20" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Bottom" />
+
+            <Style Selector="^ /template/ Border#PART_RootBorder">
+                <Setter Property="MinHeight" Value="0" />
+                <Setter Property="Height" Value="20" />
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="CornerRadius" Value="0" />
+                <Setter Property="ClipToBounds" Value="False" />
+            </Style>
+            <Style Selector="^ /template/ TextBox#PART_TextBox">
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Height" Value="18" />
+                <Setter Property="MinHeight" Value="0" />
+                <Setter Property="MaxHeight" Value="18" />
+                <Setter Property="VerticalAlignment" Value="Bottom" />
+                <Setter Property="Background" Value="Transparent" />
+            </Style>
+            <Style Selector="^ /template/ TextBox#PART_TextBox /template/ Panel#PART_TextFieldPanel">
+                <Setter Property="MinHeight" Value="0" />
+                <Setter Property="Height" Value="18" />
+                <Setter Property="MaxHeight" Value="18" />
+            </Style>
+            <Style Selector="^ /template/ TextBox#PART_TextBox /template/ Panel#PART_TextContainer">
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="VerticalAlignment" Value="Bottom" />
+            </Style>
+            <Style Selector="^ /template/ TextBox#PART_TextBox /template/ TextPresenter#PART_TextPresenter">
+                <Setter Property="Margin" Value="0,0,0,2" />
+                <Setter Property="VerticalAlignment" Value="Bottom" />
+            </Style>
+            <Style Selector="^ /template/ materialControls|MaterialUnderline">
+                <Setter Property="Height" Value="1" />
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="VerticalAlignment" Value="Bottom" />
+            </Style>
+        </Style>
+        <Style Selector="NumericUpDown /template/ RepeatButton, NumericUpDown /template/ Button">
+            <Setter Property="MinWidth" Value="16" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Width" Value="16" />
         </Style>
 
         <!--  Slider  -->

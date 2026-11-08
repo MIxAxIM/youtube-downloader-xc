@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using YoutubeDownloader.XC.Core.Downloading;
 using Xunit;
+using YoutubeDownloader.XC.Core.Downloading;
 
 namespace YoutubeDownloader.XC.Tests;
 
@@ -43,11 +43,43 @@ public class QueuePolicyTests
     }
 
     [Fact]
+    public void File_title_uses_artist_and_song_instead_of_a_url()
+    {
+        Assert.True(
+            QueuePolicy.IsPlaceholderTitle(
+                "https://www.youtube.com/watch?v=abc",
+                "https://www.youtube.com/watch?v=abc"
+            )
+        );
+        Assert.Equal(
+            "Johnny Goth - My Only",
+            QueuePolicy.PreferredFileTitle(
+                "Johnny Goth",
+                "https://www.youtube.com/watch?v=abc",
+                "My Only"
+            )
+        );
+        Assert.Equal(
+            "Johnny Goth",
+            QueuePolicy.PreferredFileTitle("Johnny Goth", "https://youtu.be/abc", null)
+        );
+    }
+
+    [Fact]
     public void Video_and_audio_use_different_folders()
     {
-        Assert.Equal(@"E:\Music", QueuePolicy.OutputFolder(true, @"E:\Video", @"E:\Music", false, null, false));
-        Assert.Equal(@"E:\Video", QueuePolicy.OutputFolder(false, @"E:\Video", @"E:\Music", false, null, false));
-        Assert.Equal(@"E:\Music", QueuePolicy.OutputFolder(false, @"E:\Video", @"E:\Music", true, null, false));
+        Assert.Equal(
+            @"E:\Music",
+            QueuePolicy.OutputFolder(true, @"E:\Video", @"E:\Music", false, null, false)
+        );
+        Assert.Equal(
+            @"E:\Video",
+            QueuePolicy.OutputFolder(false, @"E:\Video", @"E:\Music", false, null, false)
+        );
+        Assert.Equal(
+            @"E:\Music",
+            QueuePolicy.OutputFolder(false, @"E:\Video", @"E:\Music", true, null, false)
+        );
         Assert.Equal(
             PathCombine(@"E:\Music", "Mix"),
             QueuePolicy.OutputFolder(true, @"E:\Video", @"E:\Music", false, "Mix", true)
@@ -90,14 +122,8 @@ public class QueuePolicyTests
     [Fact]
     public void Typed_artist_wins_and_year_follows_the_selected_source()
     {
-        Assert.Equal(
-            "Typed",
-            QueuePolicy.ResolveArtist("Typed", "Brainz", "Channel", true)
-        );
-        Assert.Equal(
-            "Channel",
-            QueuePolicy.ResolveArtist(" ", null, "Channel", true)
-        );
+        Assert.Equal("Typed", QueuePolicy.ResolveArtist("Typed", "Brainz", "Channel", true));
+        Assert.Equal("Channel", QueuePolicy.ResolveArtist(" ", null, "Channel", true));
         Assert.Equal(2020, QueuePolicy.ResolveYear("Upload", 2020, 1999));
         Assert.Equal(1999, QueuePolicy.ResolveYear("MusicBrainz", 2020, 1999));
         Assert.Null(QueuePolicy.ResolveYear("None", 2020, 1999));
@@ -109,11 +135,7 @@ public class QueuePolicyTests
     public void History_filter_drops_old_rows_and_export_keeps_visible_ones()
     {
         var now = DateTimeOffset.Parse("2026-11-02T00:00:00Z");
-        var rows = new[]
-        {
-            new Row("new", now.AddHours(-1)),
-            new Row("old", now.AddDays(-40)),
-        };
+        var rows = new[] { new Row("new", now.AddHours(-1)), new Row("old", now.AddDays(-40)) };
 
         var visible = QueuePolicy.FilterHistoryByAge(rows, row => row.At, "30Days", now);
         Assert.Equal(["new"], visible.Select(row => row.Name).ToArray());
@@ -139,8 +161,14 @@ public class QueuePolicyTests
         Assert.True(QueuePolicy.IsMembersOrPremiere("Premiere has not started"));
         Assert.False(QueuePolicy.ShouldStartDownload(networkIsMetered: true, pauseOnMetered: true));
         Assert.True(QueuePolicy.ShouldStartDownload(networkIsMetered: true, pauseOnMetered: false));
-        Assert.EndsWith("Settings.json", QueuePolicy.SettingsFilePath(true, @"E:\App", @"C:\profile\settings.json"));
-        Assert.Equal(@"C:\profile\settings.json", QueuePolicy.SettingsFilePath(false, @"E:\App", @"C:\profile\settings.json"));
+        Assert.EndsWith(
+            "Settings.json",
+            QueuePolicy.SettingsFilePath(true, @"E:\App", @"C:\profile\settings.json")
+        );
+        Assert.Equal(
+            @"C:\profile\settings.json",
+            QueuePolicy.SettingsFilePath(false, @"E:\App", @"C:\profile\settings.json")
+        );
     }
 
     [Fact]
@@ -160,12 +188,20 @@ public class QueuePolicyTests
     [Fact]
     public void History_export_writes_visible_rows()
     {
-        var text = DownloadHistoryList.ExportVisible(
-            [
-                new DownloadHistoryEntry("A", @"E:\a.mp4", DateTimeOffset.Parse("2026-01-01Z"), "https://youtu.be/a"),
-                new DownloadHistoryEntry("B", @"E:\b.mp4", DateTimeOffset.Parse("2026-01-02Z"), "https://youtu.be/b"),
-            ]
-        );
+        var text = DownloadHistoryList.ExportVisible([
+            new DownloadHistoryEntry(
+                "A",
+                @"E:\a.mp4",
+                DateTimeOffset.Parse("2026-01-01Z"),
+                "https://youtu.be/a"
+            ),
+            new DownloadHistoryEntry(
+                "B",
+                @"E:\b.mp4",
+                DateTimeOffset.Parse("2026-01-02Z"),
+                "https://youtu.be/b"
+            ),
+        ]);
         Assert.Contains("A", text);
         Assert.Contains("https://youtu.be/b", text);
     }

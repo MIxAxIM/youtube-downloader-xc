@@ -32,6 +32,28 @@ public static class DownloadHistoryList
         return next;
     }
 
+    public static IReadOnlyList<DownloadHistoryEntry> Upsert(
+        IReadOnlyList<DownloadHistoryEntry>? history,
+        DownloadHistoryEntry entry
+    )
+    {
+        var existing = history?.FirstOrDefault(item =>
+            !string.IsNullOrWhiteSpace(entry.Url)
+            && string.Equals(item.Url, entry.Url, StringComparison.OrdinalIgnoreCase)
+        );
+
+        var saved =
+            existing is not null && string.IsNullOrWhiteSpace(entry.FilePath)
+                ? entry with
+                {
+                    FilePath = existing.FilePath,
+                }
+                : entry;
+
+        var without = history?.Where(item => item != existing).ToArray();
+        return Append(without, saved);
+    }
+
     public static IReadOnlyList<DownloadHistoryEntry> Clear() => [];
 
     public static IReadOnlyList<DownloadHistoryEntry> Delete(

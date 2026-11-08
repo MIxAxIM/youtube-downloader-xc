@@ -82,13 +82,12 @@ public class DialogManager : IDisposable
         // Close the window when OK / Cancel finish the dialog view-model.
         _ = viewModel
             .WaitForCloseAsync()
-            .ContinueWith(
-                _ =>
+            .ContinueWith(_ =>
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                 {
                     if (window.IsVisible)
-                        Avalonia.Threading.Dispatcher.UIThread.Post(window.Close);
-                },
-                TaskScheduler.Default
+                        window.Close();
+                })
             );
 
         await window.ShowDialog(owner);

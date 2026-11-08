@@ -22,7 +22,8 @@ public sealed record QueueCardSnapshot(
     string? ClipEnd,
     string? CoverTime,
     bool VideoOnly,
-    bool SaveSrt
+    bool SaveSrt,
+    string? PlaylistId = null
 );
 
 public static class QueueSnapshot

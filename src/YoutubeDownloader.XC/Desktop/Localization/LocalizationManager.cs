@@ -198,6 +198,7 @@ public partial class LocalizationManager
     public string AudioBitrateLabel => Get();
     public string PasteButton => Get();
     public string PasteTooltip => Get();
+    public string ImportPlaylistTooltip => Get();
     public string DownloadAllButton => Get();
     public string WaitingLabel => Get();
     public string DownloadedProgress => Get();
