@@ -9,6 +9,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using DialogHostAvalonia;
+using YoutubeDownloader.XC.Auth;
 using YoutubeDownloader.XC.Utils.Extensions;
 using YoutubeDownloader.XC.ViewModels.Dialogs;
 using YoutubeDownloader.XC.Views.Dialogs;
@@ -19,6 +20,7 @@ public class DialogManager : IDisposable
 {
     private readonly SemaphoreSlim _dialogLock = new(1, 1);
     private SettingsWindow? _settingsWindow;
+    private AuthWindow? _authWindow;
 
     public async Task<T?> ShowDialogAsync<T>(DialogViewModelBase<T> dialog)
     {
@@ -54,6 +56,45 @@ public class DialogManager : IDisposable
         {
             _dialogLock.Release();
         }
+    }
+
+    public void ShowAuthWindow(Func<AuthSetupViewModel> createViewModel)
+    {
+        if (_authWindow is not null)
+        {
+            _authWindow.Activate();
+            return;
+        }
+
+        var viewModel = createViewModel();
+        var window = new AuthWindow { DataContext = viewModel };
+        _authWindow = window;
+
+        window.Closed += (_, _) =>
+        {
+            if (ReferenceEquals(_authWindow, window))
+                _authWindow = null;
+
+            viewModel.Dispose();
+        };
+
+        _ = viewModel
+            .WaitForCloseAsync()
+            .ContinueWith(_ =>
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                {
+                    if (window.IsVisible)
+                        window.Close();
+                })
+            );
+
+        var owner = (
+            Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime
+        )?.MainWindow;
+        if (owner is not null)
+            window.Show(owner);
+        else
+            window.Show();
     }
 
     public async Task<bool?> ShowSettingsWindowAsync(SettingsViewModel viewModel)

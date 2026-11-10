@@ -149,6 +149,9 @@ public partial class LocalizationManager
             [nameof(PasteButton)] = "Paste link",
             [nameof(PasteTooltip)] = "Paste a link from the clipboard and add it to the queue",
             [nameof(ImportPlaylistTooltip)] = "Import all videos from this playlist",
+            [nameof(VideoBlockedMessage)] =
+                "YouTube needs you to sign in before this video can be loaded.",
+            [nameof(SignInButton)] = "Sign in",
             [nameof(DownloadAllButton)] = "Download all",
             [nameof(WaitingLabel)] = "Waiting...",
             [nameof(DownloadedProgress)] = "Downloaded {0} of {1}",

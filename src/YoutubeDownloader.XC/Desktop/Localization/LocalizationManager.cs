@@ -199,6 +199,8 @@ public partial class LocalizationManager
     public string PasteButton => Get();
     public string PasteTooltip => Get();
     public string ImportPlaylistTooltip => Get();
+    public string VideoBlockedMessage => Get();
+    public string SignInButton => Get();
     public string DownloadAllButton => Get();
     public string WaitingLabel => Get();
     public string DownloadedProgress => Get();

@@ -4,8 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:auth="clr-namespace:YoutubeDownloader.XC.Auth"
     xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-    Height="450"
-    MinWidth="450"
     x:DataType="auth:AuthSetupViewModel">
     <Grid RowDefinitions="Auto,*,Auto">
         <!--  Title  -->
@@ -44,6 +42,13 @@
                         TextWrapping="Wrap">
                         <Run FontWeight="Light" Text="{Binding LocalizationManager.AuthenticatedText}" />
                     </TextBlock>
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        FontSize="16"
+                        FontWeight="SemiBold"
+                        IsVisible="{Binding AccountLabel, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                        Text="{Binding AccountLabel}"
+                        TextAlignment="Center" />
 
                     <!--  Log out  -->
                     <Button

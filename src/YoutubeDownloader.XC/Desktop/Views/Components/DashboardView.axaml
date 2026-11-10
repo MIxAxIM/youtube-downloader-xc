@@ -69,11 +69,20 @@
                     Command="{Binding ShowAuthSetupCommand}"
                     Foreground="{DynamicResource MaterialDarkForegroundBrush}"
                     Classes="icon"
-                    ToolTip.Tip="{Binding LocalizationManager.AuthTooltip}">
-                    <materialIcons:MaterialIcon
-                        Width="16"
-                        Height="16"
-                        Kind="AccountKey" />
+                    ToolTip.Tip="{Binding AuthTooltip}">
+                    <Panel>
+                        <materialIcons:MaterialIcon
+                            Width="16"
+                            Height="16"
+                            IsVisible="{Binding !IsAuthenticated}"
+                            Kind="AccountKey" />
+                        <materialIcons:MaterialIcon
+                            Width="16"
+                            Height="16"
+                            Foreground="#66BB6A"
+                            IsVisible="{Binding IsAuthenticated}"
+                            Kind="AccountCheck" />
+                    </Panel>
                 </Button>
 
                 <!--  Settings button  -->
@@ -105,7 +114,7 @@
                         Height="18"
                         VerticalAlignment="Center"
                         Kind="VideoOutline" />
-                    <ToggleSwitch IsChecked="{Binding IsAudioDefault}" />
+                    <ToggleSwitch IsChecked="{Binding IsAudioDefault, Mode=TwoWay}" />
                     <materialIcons:MaterialIcon
                         Width="18"
                         Height="18"
@@ -179,7 +188,7 @@
                     HorizontalAlignment="Right"
                     Padding="1"
                     Classes="icon"
-                    ToolTip.Tip="{Binding LocalizationManager.SettingsTooltip}">
+                    ToolTip.Tip="Menu">
                     <Button.Flyout>
                         <MenuFlyout Placement="BottomEdgeAlignedRight">
                             <MenuItem Command="{Binding PasteCommand}" Header="{Binding LocalizationManager.PasteButton}" InputGesture="Ctrl+V" />
@@ -203,7 +212,7 @@
                             <MenuItem Command="{Binding QuitAppCommand}" Header="Quit" />
                         </MenuFlyout>
                     </Button.Flyout>
-                    <materialIcons:MaterialIcon Width="15" Height="15" Kind="Cog" />
+                    <materialIcons:MaterialIcon Width="15" Height="15" Kind="DotsVertical" />
                 </Button>
             </Grid>
 
@@ -335,7 +344,7 @@
                     <ToggleSwitch
                         Grid.Column="3"
                         Margin="0,0,0,0"
-                        IsChecked="{Binding IsCompact}"
+                        IsChecked="{Binding IsCompact, Mode=TwoWay}"
                         ToolTip.Tip="Show or hide the extra fields on each card" />
                 </Grid>
             <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -414,7 +423,7 @@
                                                 Kind="VideoOutline" />
                                             <ToggleSwitch
                                                 VerticalAlignment="Center"
-                                                IsChecked="{Binding IsAudioMode}"
+                                                IsChecked="{Binding IsAudioMode, Mode=TwoWay}"
                                                 IsEnabled="{Binding CanEdit}" />
                                             <materialIcons:MaterialIcon
                                                 Width="18"
@@ -654,8 +663,37 @@
                                                     IsChecked="{Binding SaveSrt}"
                                                     IsVisible="{Binding !IsAudioMode}" />
                                             </WrapPanel>
+                                            <Border
+                                                Margin="0,4,0,0"
+                                                Padding="8,4"
+                                                Background="#33E53935"
+                                                CornerRadius="6"
+                                                IsVisible="{Binding HasError}">
+                                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                                    <materialIcons:MaterialIcon
+                                                        Width="16"
+                                                        Height="16"
+                                                        VerticalAlignment="Center"
+                                                        Foreground="#EF5350"
+                                                        Kind="AlertCircleOutline" />
+                                                    <TextBlock
+                                                        Grid.Column="1"
+                                                        Margin="8,0,8,0"
+                                                        VerticalAlignment="Center"
+                                                        Text="{Binding ErrorMessage}"
+                                                        TextWrapping="Wrap" />
+                                                    <Button
+                                                        Grid.Column="2"
+                                                        Padding="8,2"
+                                                        Classes="dialog"
+                                                        Command="{Binding #UserControl.((components:DashboardViewModel)DataContext).ShowAuthSetupCommand}"
+                                                        Content="{Binding #UserControl.((components:DashboardViewModel)DataContext).LocalizationManager.SignInButton}"
+                                                        IsVisible="{Binding NeedsAuthentication}" />
+                                                </Grid>
+                                            </Border>
                                             <TextBlock
                                                 Opacity="0.8"
+                                                IsVisible="{Binding ProgressLabel, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                                 PointerReleased="StatusTextBlock_OnPointerReleased"
                                                 Text="{Binding ProgressLabel}"
                                                 TextTrimming="CharacterEllipsis"

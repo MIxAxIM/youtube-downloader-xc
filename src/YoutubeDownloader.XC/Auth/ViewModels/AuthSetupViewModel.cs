@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Avalonia.Threading;
 using PowerKit.Extensions;
 using YoutubeDownloader.XC.Framework;
 using YoutubeDownloader.XC.Localization;
@@ -24,13 +25,21 @@ public class AuthSetupViewModel : DialogViewModelBase
 
         _eventSubscription = _settingsService.WatchProperty(
             o => o.LastAuthCookies,
-            _ =>
+            cookies =>
             {
                 OnPropertyChanged(nameof(Cookies));
                 OnPropertyChanged(nameof(IsAuthenticated));
+                _ = AuthIdentity.RefreshAsync(cookies);
             }
         );
+        AuthIdentity.LabelChanged += OnAuthLabelChanged;
+        _ = AuthIdentity.RefreshAsync(_settingsService.LastAuthCookies);
     }
+
+    public string AccountLabel => AuthIdentity.Label ?? "";
+
+    private void OnAuthLabelChanged() =>
+        Dispatcher.UIThread.Post(() => OnPropertyChanged(nameof(AccountLabel)));
 
     public LocalizationManager LocalizationManager { get; }
 
@@ -63,6 +72,7 @@ public class AuthSetupViewModel : DialogViewModelBase
     {
         if (disposing)
         {
+            AuthIdentity.LabelChanged -= OnAuthLabelChanged;
             _eventSubscription.Dispose();
         }
 

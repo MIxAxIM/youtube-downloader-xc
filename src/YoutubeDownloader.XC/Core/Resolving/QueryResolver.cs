@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using YoutubeDownloader.XC.Core.Utils;
 using YoutubeExplode;
 using YoutubeExplode.Channels;
 using YoutubeExplode.Common;
+using YoutubeExplode.Exceptions;
 using YoutubeExplode.Playlists;
 using YoutubeExplode.Videos;
 
@@ -47,8 +49,54 @@ public class QueryResolver(IReadOnlyList<Cookie>? initialCookies = null) : IDisp
         if (VideoId.TryParse(query) is not { } videoId)
             return null;
 
-        var video = await _youtube.Videos.GetAsync(videoId, cancellationToken);
-        return new QueryResult(QueryResultKind.Video, video.Title, [video]);
+        try
+        {
+            var video = await _youtube.Videos.GetAsync(videoId, cancellationToken);
+            return new QueryResult(QueryResultKind.Video, video.Title, [video]);
+        }
+        catch (VideoUnavailableException)
+        {
+            // The watch page said the video is missing, but the public preview
+            // still has a title. YouTube is blocking the anonymous player.
+            if (await TryPreviewAsync(videoId, cancellationToken) is { } preview)
+                return new QueryResult(QueryResultKind.Video, preview.Title, [preview]);
+
+            throw;
+        }
+    }
+
+    private static async Task<PreviewVideo?> TryPreviewAsync(
+        VideoId videoId,
+        CancellationToken cancellationToken
+    )
+    {
+        try
+        {
+            using var response = await Http.Client.GetAsync(
+                $"https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v={videoId}&format=json",
+                cancellationToken
+            );
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            using var json = JsonDocument.Parse(
+                await response.Content.ReadAsStringAsync(cancellationToken)
+            );
+            var title = json.RootElement.TryGetProperty("title", out var titleElement)
+                ? titleElement.GetString()
+                : null;
+            if (string.IsNullOrWhiteSpace(title))
+                return null;
+
+            var author = json.RootElement.TryGetProperty("author_name", out var authorElement)
+                ? authorElement.GetString()
+                : null;
+            return new PreviewVideo(videoId, title, author ?? "");
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            return null;
+        }
     }
 
     private async Task<QueryResult?> TryResolveChannelAsync(

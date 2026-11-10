@@ -75,7 +75,13 @@ public partial class DownloadViewModel : ViewModelBase
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CopyErrorMessageCommand))]
+    [NotifyPropertyChangedFor(nameof(HasError))]
     public partial string? ErrorMessage { get; set; }
+
+    public bool HasError =>
+        Status is DownloadStatus.Failed || !string.IsNullOrWhiteSpace(ErrorMessage);
+
+    public bool NeedsAuthentication => Video is Core.Resolving.PreviewVideo;
 
     public CancellationToken CancellationToken => _cancellationTokenSource.Token;
 

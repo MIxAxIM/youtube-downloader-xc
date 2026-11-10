@@ -180,7 +180,8 @@ public partial class DownloadViewModel
     public string EstimatedSizeText =>
         TotalBytes <= 0 ? "" : DownloadProgressMath.FormatMegabytes(TotalBytes);
 
-    public bool CanReload => Status == DownloadStatus.Failed;
+    public bool CanReload =>
+        Status == DownloadStatus.Failed || Video is Core.Resolving.PreviewVideo;
 
     public bool CanDownloadAgain => Status == DownloadStatus.Completed;
 
@@ -311,6 +312,7 @@ public partial class DownloadViewModel
         OnPropertyChanged(nameof(CanSaveAudio));
         OnPropertyChanged(nameof(CanPause));
         OnPropertyChanged(nameof(CanResume));
+        OnPropertyChanged(nameof(HasError));
         UpdateProgressSnapshot();
     }
 
@@ -321,6 +323,9 @@ public partial class DownloadViewModel
         OnPropertyChanged(nameof(DurationText));
         OnPropertyChanged(nameof(ArtistText));
         OnPropertyChanged(nameof(DateText));
+        OnPropertyChanged(nameof(CanReload));
+        OnPropertyChanged(nameof(HasError));
+        OnPropertyChanged(nameof(NeedsAuthentication));
         if (value is not null && QueuePolicy.IsPlaceholderTitle(EditedTitle, SourceQuery))
             EditedTitle = value.Title;
         if (string.IsNullOrWhiteSpace(EditedArtist))
@@ -449,8 +454,8 @@ public partial class DownloadViewModel
         SelectedBitrateChoice =
             BitrateChoices.FirstOrDefault(choice =>
                 choice.KilobitsPerSecond == _selectedBitrateKbps
-            ) ?? BitrateChoices[0];
-        _selectedBitrateKbps = SelectedBitrateChoice.KilobitsPerSecond;
+            ) ?? BitrateChoices.FirstOrDefault();
+        _selectedBitrateKbps = SelectedBitrateChoice?.KilobitsPerSecond;
 
         _refreshingChoices = false;
         OnPropertyChanged(nameof(CanStart));

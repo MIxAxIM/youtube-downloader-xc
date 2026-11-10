@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PowerKit.Extensions;
@@ -33,9 +34,18 @@ public partial class SettingsViewModel : DialogViewModelBase
         LocalizationManager = localizationManager;
         _settingsService = settingsService;
         _eventSubscription = _settingsService.WatchAllProperties(OnAllPropertiesChanged);
+        AuthIdentity.LabelChanged += OnAuthLabelChanged;
         SelectedTab = SettingsTab.General;
         _snapshot = SettingsSnapshot.Capture(settingsService);
+        _ = AuthIdentity.RefreshAsync(_settingsService.LastAuthCookies);
     }
+
+    public string AuthAccountLabel => AuthIdentity.Label ?? "";
+
+    public bool IsAuthenticated => AuthIdentity.IsSignedIn(_settingsService.LastAuthCookies);
+
+    private void OnAuthLabelChanged() =>
+        Dispatcher.UIThread.Post(() => OnPropertyChanged(nameof(AuthAccountLabel)));
 
     public LocalizationManager LocalizationManager { get; }
 
@@ -666,7 +676,10 @@ public partial class SettingsViewModel : DialogViewModelBase
     protected override void Dispose(bool disposing)
     {
         if (disposing)
+        {
+            AuthIdentity.LabelChanged -= OnAuthLabelChanged;
             _eventSubscription.Dispose();
+        }
 
         base.Dispose(disposing);
     }

@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
 using PowerKit.Extensions;
 using YoutubeDownloader.XC.Framework;
 using YoutubeDownloader.XC.ViewModels.Components;
@@ -72,6 +73,11 @@ public partial class DashboardView : UserControl<DashboardViewModel>
         if (sender is not Border { DataContext: DownloadViewModel card })
             return;
 
+        // A click on a switch or button must finish on that control. Selecting the
+        // card moves it, and the switch never receives the release.
+        if (IsOnInteractiveControl(args.Source as Visual))
+            return;
+
         var ctrl = args.KeyModifiers.HasFlag(KeyModifiers.Control);
         var shift = args.KeyModifiers.HasFlag(KeyModifiers.Shift);
         if (!ctrl && !shift)
@@ -86,6 +92,17 @@ public partial class DashboardView : UserControl<DashboardViewModel>
             card.IsSelected = !card.IsSelected;
         else
             card.IsSelected = true;
+    }
+
+    private static bool IsOnInteractiveControl(Visual? source)
+    {
+        for (var current = source; current is not null; current = current.GetVisualParent())
+        {
+            if (current is ToggleSwitch or Button or TextBox or ComboBox or NumericUpDown)
+                return true;
+        }
+
+        return false;
     }
 
     private void Card_OnDoubleTapped(object? sender, TappedEventArgs args)

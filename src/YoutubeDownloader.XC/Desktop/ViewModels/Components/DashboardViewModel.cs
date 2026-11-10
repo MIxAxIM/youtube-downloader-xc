@@ -73,6 +73,17 @@ public partial class DashboardViewModel : ViewModelBase
             Progress.WatchProperty(
                 o => o.Current,
                 _ => OnPropertyChanged(nameof(IsProgressIndeterminate))
+            ),
+            _settingsService.WatchProperty(
+                o => o.LastAuthCookies,
+                cookies =>
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        OnPropertyChanged(nameof(IsAuthenticated));
+                        OnPropertyChanged(nameof(AuthTooltip));
+                        _ = AuthIdentity.RefreshAsync(cookies);
+                        ReloadCardsWaitingForAuth();
+                    })
             )
         );
 
@@ -104,6 +115,9 @@ public partial class DashboardViewModel : ViewModelBase
             OnPropertyChanged(nameof(VisibleDownloads));
         };
         Downloads.CollectionChanged += (_, _) => OnPropertyChanged(nameof(VisibleDownloads));
+        AuthIdentity.LabelChanged += () =>
+            Dispatcher.UIThread.Post(() => OnPropertyChanged(nameof(AuthTooltip)));
+        _ = AuthIdentity.RefreshAsync(_settingsService.LastAuthCookies);
         RestorePersistedQueue();
     }
 
@@ -134,6 +148,13 @@ public partial class DashboardViewModel : ViewModelBase
     private bool _defaultsReady;
 
     public LocalizationManager LocalizationManager { get; }
+
+    public bool IsAuthenticated => AuthIdentity.IsSignedIn(_settingsService.LastAuthCookies);
+
+    public string AuthTooltip =>
+        IsAuthenticated && !string.IsNullOrWhiteSpace(AuthIdentity.Label)
+            ? AuthIdentity.Label
+            : LocalizationManager.AuthTooltip;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsProgressIndeterminate))]
@@ -286,11 +307,25 @@ public partial class DashboardViewModel : ViewModelBase
 
     public override async Task InitializeAsync() => await EnsureFFmpegAsync();
 
-    private bool CanShowAuthSetup() => !IsBusy;
+    [RelayCommand]
+    private void ShowAuthSetup() =>
+        _dialogManager.ShowAuthWindow(_viewModelManager.GetAuthSetupViewModel);
 
-    [RelayCommand(CanExecute = nameof(CanShowAuthSetup))]
-    private async Task ShowAuthSetupAsync() =>
-        await _dialogManager.ShowDialogAsync(_viewModelManager.GetAuthSetupViewModel());
+    private void ReloadCardsWaitingForAuth()
+    {
+        var cookies = _settingsService.LastAuthCookies;
+        var signedIn =
+            cookies?.Any(cookie =>
+                cookie.Name.StartsWith("__SECURE", StringComparison.OrdinalIgnoreCase)
+                && !cookie.Expired
+                && cookie.Expires.ToUniversalTime() > DateTime.UtcNow
+            ) == true;
+        if (!signedIn)
+            return;
+
+        foreach (var card in Downloads.Where(card => card.NeedsAuthentication).ToArray())
+            ReloadCard(card);
+    }
 
     private bool CanShowSettings() => !IsBusy;
 
@@ -919,10 +954,13 @@ public partial class DashboardViewModel : ViewModelBase
         card.Status = DownloadStatus.Ready;
         card.ErrorMessage = null;
         card.IsLoading = true;
-        if (card.Video is not null)
+        if (card.Video is Core.Resolving.PreviewVideo || card.Video is null)
+        {
+            if (!string.IsNullOrWhiteSpace(card.SourceQuery))
+                _ = ResolveIntoCardAsync(card);
+        }
+        else
             _ = LoadCardOptionsAsync(card);
-        else if (!string.IsNullOrWhiteSpace(card.SourceQuery))
-            _ = ResolveIntoCardAsync(card);
     }
 
     [RelayCommand]
@@ -1068,7 +1106,11 @@ public partial class DashboardViewModel : ViewModelBase
             if (result.Kind == QueryResultKind.Video || result.Videos.Count == 1)
             {
                 card.Video = result.Videos[0];
-                if (attachedPlaylist is { } playlist && result.Kind == QueryResultKind.Video)
+                if (
+                    attachedPlaylist is { } playlist
+                    && result.Kind == QueryResultKind.Video
+                    && !playlist.Value.StartsWith("RD", StringComparison.Ordinal)
+                )
                     card.PlaylistId = playlist.Value;
                 card.IsLoading = true;
                 await LoadCardOptionsCoreAsync(card);
@@ -1180,8 +1222,18 @@ public partial class DashboardViewModel : ViewModelBase
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             card.IsLoading = false;
-            card.Status = DownloadStatus.Failed;
-            card.ErrorMessage = ex is YoutubeExplodeException ? ex.Message : ex.ToString();
+            if (card.Video is Core.Resolving.PreviewVideo)
+            {
+                // Leave the card editable so the audio and compact switches still respond.
+                card.Status = DownloadStatus.Ready;
+                card.ErrorMessage = LocalizationManager.VideoBlockedMessage;
+                ShowAuthSetup();
+            }
+            else
+            {
+                card.Status = DownloadStatus.Failed;
+                card.ErrorMessage = ex is YoutubeExplodeException ? ex.Message : ex.ToString();
+            }
             AppendErrorLog(card.Video?.Title ?? card.EditedTitle, card.ErrorMessage);
             RememberQueued(card);
         }
